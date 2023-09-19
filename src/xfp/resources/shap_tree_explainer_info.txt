@@ -1,0 +1,9 @@
+The feature importance here is done by SHAP TreeExplainer. Following are the notes on interpreting the beeswarm SHAP Summary Plots:
+- Each dot is the SHAP value of a bit of a molecule (terms used interchangeably are: sample, observation, data point, entry, compound, etc.) in the dataset.
+- The dots representing the same SHAP values of a bit overlap. However, the frequency of these values can be observed as the density of the dots along the x-axis.
+- Morgan Fingerprint bits are binary in nature. A red dot shows that the bit is switched on for a molecule, meaning that at least one substructure present in this molecule is encoded by this bit. A blue dot means that the bit is switched off for a molecule and this means that no substructures are present in this molecule which are encoded by this bit.
+- For binary classification, SHAP values of a Morgan Fingerprint bit greater than zero describe that the presence or absence of this feature contributes towards the model prediction classes' second category (usually labelled as '1'). While the SHAP values less than zero describe that the presence or absence of this feature contributes towards the first category (usually labelled as '0').
+
+Caution: 
+- Bar plots will be used instead of beeswarm plots as a default SHAP Summary Plot in case of multi-class classification. X-FP analysis for multi-class classification is still under testing and should be completely avoided. 
+- X-FP analysis for regression models is also under testing, and while such models and their SHAP analysis are compatible, they should be also avoided for time-being.

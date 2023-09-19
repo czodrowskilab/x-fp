@@ -1,0 +1,5 @@
+- The molecule fragment is drawn with the atoms in the same positions as in the original molecule.
+- The central atom is highlighted in blue.
+- Aromatic atoms are highlighted in yellow.
+- Aliphatic ring atoms are highlighted in dark grey.
+- Atoms/bonds that are drawn in light grey indicate pieces of the structure that influence the atoms' connectivity invariants but that are not directly part of the fingerprint.

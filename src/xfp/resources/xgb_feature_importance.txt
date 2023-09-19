@@ -1,0 +1,9 @@
+Quoting XGBoost documentation (last accessed 19 September 2023), the feature importances are defined as follows:
+
+1. "weight": the number of times a feature is used to split the data across all trees.
+2. "gain": the average gain across all splits the feature is used in.
+3. "cover": the average coverage across all splits the feature is used in.
+4. "total_gain": the total gain across all splits the feature is used in.
+5. "total_cover": the total coverage across all splits the feature is used in.
+
+Note, that these feature importances are for the tree-based models. If you are using a different booster, choose feature importance method accordingly. 

@@ -1,0 +1,8 @@
+#Ignore Mac DS_Store
+.DS_Store
+.idea
+.ipynb_checkpoints
+.virtual_documents
+__pycache__
+/build
+*.egg-info
