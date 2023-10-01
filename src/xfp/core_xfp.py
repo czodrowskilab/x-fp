@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
-from rdkit.Chem import Draw, DataStructs, BondType, AllChem as Chem
+from rdkit.Chem import Draw, BondType, AllChem as Chem, rdFingerprintGenerator
 from tqdm import tqdm
 
 BOND_DICT = {
@@ -28,15 +28,18 @@ class FingerprintManager:
         self.fp = None
         self.bit_info_name = None
         self.fp_name = None
-        self.n_bits = None
-        self.radius = None
-        self.use_features = None
         self.input_df = None
         self.mol_col = None
+        self.fp_gen = None
+        self.use_features = None
 
-    @staticmethod
     def fetch_fp_from_mol(
-        in_mol: Chem.Mol, radius: int = 2, n_bits: int = 2048, use_features: bool = False, use_chirality: bool = False
+        self,
+        in_mol: Chem.Mol,
+        radius: int = 2,
+        n_bits: int = 2048,
+        use_features: bool = False,
+        use_chirality: bool = False,
     ) -> tuple[np.ndarray, dict[str, list[int]]]:
         """
         Generate Morgan fingerprint from a RDKit molecule object.
@@ -61,21 +64,25 @@ class FingerprintManager:
             bit info as a dictionary as the second element.
 
         """
-        bit_info = {}
-        morgan_fp = Chem.GetMorganFingerprintAsBitVect(
-            in_mol,
-            radius,
-            nBits=n_bits,
-            useFeatures=use_features,
-            bitInfo=bit_info,
-            useChirality=use_chirality,
-        )
-        morgan_fp_as_array = np.empty(n_bits, dtype=np.uint8)
-        DataStructs.ConvertToNumpyArray(morgan_fp, morgan_fp_as_array)
-        return morgan_fp_as_array, bit_info
+        if (
+            self.fp_gen is None
+            or self.fp_gen.GetOptions().radius != radius
+            or self.fp_gen.GetOptions().fpSize != n_bits
+            or self.fp_gen.GetOptions().includeChirality != use_chirality
+            or self.use_features != use_features
+        ):
+            self.use_features = use_features
+            atom_inv_gen = rdFingerprintGenerator.GetMorganFeatureAtomInvGen() if use_features else None
+            self.fp_gen = rdFingerprintGenerator.GetMorganGenerator(
+                radius=radius, fpSize=n_bits, includeChirality=use_chirality, atomInvariantsGenerator=atom_inv_gen
+            )
+        ao = rdFingerprintGenerator.AdditionalOutput()
+        ao.AllocateBitInfoMap()
+        morgan_fp_as_array = self.fp_gen.GetFingerprintAsNumpy(in_mol, additionalOutput=ao)
+        return morgan_fp_as_array, ao.GetBitInfoMap()
 
-    @staticmethod
     def fetch_fp_from_smiles(
+        self,
         in_smiles: str,
         radius: int = 2,
         n_bits: int = 2048,
@@ -113,7 +120,7 @@ class FingerprintManager:
         # Catch errors based on invalid SMILES
         try:
             mol = Chem.MolFromSmiles(Chem.CanonSmiles(in_smiles))
-            return FingerprintManager.fetch_fp_from_mol(mol, radius, n_bits, use_features, use_chirality)
+            return self.fetch_fp_from_mol(mol, radius, n_bits, use_features, use_chirality)
         except:
             raise ValueError(f"Invalid SMILES present: {in_smiles}")
 
@@ -156,9 +163,6 @@ class FingerprintManager:
             If either of the SMILES or Molecules column is not present in the input DataFrame.
         """
         self.input_df = input_df
-        self.use_features = use_features
-        self.radius = radius
-        self.n_bits = n_bits
         self.mol_col = mol_col
 
         # Check whether the SMILES or mol column is present in the input DataFrame
@@ -181,11 +185,11 @@ class FingerprintManager:
             )
 
         # Generate Morgan fingerprints and bit info
-        self.fp_name = f"Morgan_FP_{self.radius}_{self.n_bits}"
-        self.bit_info_name = f"Bit_Info_{self.radius}_{self.n_bits}"
+        self.fp_name = f"Morgan_FP_{radius}_{n_bits}"
+        self.bit_info_name = f"Bit_Info_{radius}_{n_bits}"
         self.input_df[self.fp_name], self.input_df[self.bit_info_name] = zip(
             *self.input_df[self.mol_col].apply(
-                lambda x: self.fetch_fp_from_mol(x, self.radius, self.n_bits, self.use_features, use_chirality)
+                lambda x: self.fetch_fp_from_mol(x, radius, n_bits, use_features, use_chirality)
             )
         )
 
@@ -326,14 +330,14 @@ class FingerprintManager:
 
         for i, (_, row) in enumerate(self.input_df.iterrows()):
             single_mol = row[self.mol_col]
-            single_mol_bit_info = row[f"Bit_Info_{self.radius}_{self.n_bits}"]
+            single_mol_bit_info = row[f"Bit_Info_{self.fp_gen.GetOptions().radius}_{self.fp_gen.GetOptions().fpSize}"]
             for bit in single_mol_bit_info:
                 for atom_index, radius in single_mol_bit_info[bit]:
                     self.subs_per_on_bits[bit].append((single_mol, atom_index, radius))
 
         # Print the bits which are set
         if verbose:
-            print(f"{len(self.subs_per_on_bits)} / {self.n_bits} bits are set in the dataset.")
+            print(f"{len(self.subs_per_on_bits)} / {self.fp_gen.GetOptions().fpSize} bits are set in the dataset.")
 
         # Filtering duplicates per bit and extract fragment SMARTS
         if n_jobs == 1:
@@ -375,7 +379,10 @@ class FingerprintManager:
         plt.figure(figsize=(2, 4), dpi=dpi)
         fig = sns.boxplot([len(self.frags[bit]) for bit in self.frags])
         fig.set_ylabel("Substructures per bit")
-        fig.set_xlabel(f'{"F" if self.use_features else "E"}CFP{self.radius * 2} {self.n_bits} bits')
+        fig.set_xlabel(
+            f'{"F" if self.use_features else "E"}CFP{self.fp_gen.GetOptions().radius * 2} '
+            f'{self.fp_gen.GetOptions().fpSize} bits'
+        )
 
         if save_fig:
             if fig_name is None:
