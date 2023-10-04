@@ -132,19 +132,19 @@ class XGBFP(FingerprintManager):
         if importance_type not in ["weight", "gain", "cover", "total_gain", "total_cover"]:
             raise ValueError("Invalid importance type. Please enter a valid importance type.")
 
-        self.importance_df["Bits"] = [f"Bit {bit}" for bit in range(self.n_bits)]
+        self.importance_df["Bits"] = [f"Bit {bit}" for bit in range(self.fp_gen.GetOptions().fpSize)]
         if calculate_all_importances:
             importance_types = ["weight", "gain", "cover", "total_gain", "total_cover"]
             print(f"Calculating all importances: {importance_types}. Please wait.")
             for importance_type in importance_types:
                 self.importance_df[importance_type] = self._get_feature_importance(
-                    self.xgboost_model, importance_type=importance_type, n_bits=self.n_bits
+                    self.xgboost_model, importance_type=importance_type, n_bits=self.fp_gen.GetOptions().fpSize
                 )
             print("Done.")
 
         else:
             self.importance_df[importance_type] = self._get_feature_importance(
-                self.xgboost_model, importance_type=importance_type, n_bits=self.n_bits
+                self.xgboost_model, importance_type=importance_type, n_bits=self.fp_gen.GetOptions().fpSize
             )
 
         if importance_type:
