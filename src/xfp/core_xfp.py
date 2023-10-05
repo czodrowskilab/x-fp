@@ -78,7 +78,7 @@ class FingerprintManager:
             )
         ao = rdFingerprintGenerator.AdditionalOutput()
         ao.AllocateBitInfoMap()
-        morgan_fp_as_array = self.fp_gen.GetFingerprintAsNumpy(in_mol, additionalOutput=ao)
+        morgan_fp_as_array = self.fp_gen.GetFingerprintAsNumPy(in_mol, additionalOutput=ao)
         return morgan_fp_as_array, ao.GetBitInfoMap()
 
     def fetch_fp_from_smiles(
