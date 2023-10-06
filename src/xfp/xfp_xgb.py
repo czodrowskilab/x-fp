@@ -150,7 +150,7 @@ class XGBFP(FingerprintManager):
         if importance_type:
             self.primary_importance_type = importance_type
 
-    def generate_feaure_importance_plot(
+    def generate_feature_importance_plot(
         self, importance_type: str = None, max_importance: int = 10, save_fig: str = ""
     ) -> None:
         """
@@ -326,7 +326,7 @@ class XGBFP(FingerprintManager):
         bit_analysis_report = BitAnalysis()
 
         # generate the overall feature importance plot
-        self.generate_feaure_importance_plot(
+        self.generate_feature_importance_plot(
             save_fig=f"{self.folder_name}/Overall_Feature_Importance_{self.primary_importance_type}_Plot.png"
         )
         overall_feature_importance_image = (
