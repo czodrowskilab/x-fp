@@ -8,7 +8,7 @@ import pandas as pd
 import xgboost as xgb
 from xgboost import XGBClassifier
 
-import resources
+from . import resources
 from .core_xfp import FingerprintManager
 from .report_maker import BitAnalysis
 

@@ -53,7 +53,7 @@ hERG bioactivity data was accessed from CHEMBL 27. A [XGBoost binary classificat
 ```python
 
 # Import X-FP for TreeExplainer
-from xfp_tree_explainer import XFPTreeExplainer
+from xfp.xfp_tree_explainer import XFPTreeExplainer
 
 # Read the pickled shap_explainer for your model
 with open("test_data/pickled_shap_explainer_fp4.pkl", 'rb') as file:
@@ -96,7 +96,7 @@ xfp.generate_bit_analysis_report([807, 3839, 2698, 3291, 2855, 800], report_titl
 ```python
 
 # Import X-FP for XGBoost in-built feature importance methods
-from xfp_xgb import XFPXGB
+from xfp.xfp_xgb import XFPXGB
 
 # Read the FP2 XGBoost classification model
 model_fp2 = XGBClassifier()
