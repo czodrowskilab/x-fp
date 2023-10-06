@@ -27,8 +27,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import shap
 
-from core_xfp import FingerprintManager
-from report_maker import BitAnalysis
+from xfp.core_xfp import FingerprintManager
+from xfp.report_maker import BitAnalysis
 ```
 
 After importing the necessary packages, we need to import the X-FP modules. We will import the `FingerprintManager` class from `core_xfp` and the `BitAnalysis` class from `report_maker`.

@@ -4,7 +4,7 @@ from datetime import datetime
 import pandas as pd
 from fpdf import FPDF, Align
 
-import resources
+from . import resources
 
 
 class BitAnalysis(FPDF):
