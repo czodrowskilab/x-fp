@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import shap
 
-from core_xfp import FingerprintManager
-from report_maker import BitAnalysis
+from .core_xfp import FingerprintManager
+from .report_maker import BitAnalysis
 
 
 class XFPTreeExplainer(FingerprintManager):
