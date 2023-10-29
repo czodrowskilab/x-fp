@@ -30,7 +30,6 @@ dependencies = [
     "jupyterlab",
     "shap",
     "ipywidgets",
-    "black",
 ]
 
 [tool.setuptools]
