@@ -247,7 +247,7 @@ class XGBFP(FingerprintManager):
         ValueError
             If the user hasn't run the `.make_feature_importance_df()` method first.
 
-        Notes:
+        Notes
         -----
         The plot is saved in the folder with the name:
         Bit_{query_bit}_Feature_Importance_{self.primary_importance_type}_Plot.png
