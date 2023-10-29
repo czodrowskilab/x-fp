@@ -53,7 +53,6 @@ Note that you should install `xgboost` to run the examples below.
 
 ### SHAP TreeExplainer
 ```python
-
 # Import X-FP for TreeExplainer
 from xfp.xfp_tree_explainer import XFPTreeExplainer
 
@@ -96,12 +95,10 @@ xfp.generate_shap_summary_plot()
 
 # The report can be generated for any desired bits:
 xfp.generate_bit_analysis_report([807, 3839, 2698, 3291, 2855, 800], report_title = "X-FP SHAP TreeExplainer Report: hERG Test Set")
-
 ```
 
 ### XGBoost Feature Importance
 ```python
-
 # Import X-FP for XGBoost in-built feature importance methods
 from xfp.xfp_xgb import XGBFP
 
@@ -141,7 +138,6 @@ xfp.generate_feature_importance_plot()
 
 # The report can be generated for any desired bits:
 xfp.generate_bit_analysis_report([807, 3839, 2698, 3291, 2855, 800], report_title = "X-FP XGB FI Report: hERG Test Set")
-
 ```
 
 ## Cite us
