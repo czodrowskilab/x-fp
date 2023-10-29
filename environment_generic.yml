@@ -13,4 +13,3 @@ dependencies:
   - jupyterlab
   - shap
   - ipywidgets
-  - black
