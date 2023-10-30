@@ -302,4 +302,3 @@ dependencies:
   - zipp=3.16.2=pyhd8ed1ab_0
   - zlib=1.2.13=hd590300_5
   - zstd=1.5.2=hfc55251_7
-prefix: /home/marcel/mambaforge/envs/xfp-env
