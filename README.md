@@ -58,7 +58,7 @@ from xfp.xfp_tree_explainer import XFPTreeExplainer
 
 # Read the FP2 XGBoost classification model
 model_fp2 = XGBClassifier()
-fp2_model_path = "test_data/herg_model-xgb.json"
+fp2_model_path = "example_data/herg_model-xgb.json"
 
 model_fp2.load_model(fp2_model_path)
 
@@ -69,7 +69,7 @@ shap_explainer = shap.TreeExplainer(model_fp2)
 xfp = XFPTreeExplainer(shap_explainer)
 
 # Load the data (here, the test set - in case you want to visualize the important bits and the chemical substructures they encode in the test set)
-df_test = pd.read_csv('test_data/df_test_herg.tsv', sep= '\t')
+df_test = pd.read_csv('example_data/df_test_herg.tsv', sep= '\t')
 
 # Generate the fingerprints of the radius and number of bits on which the model was trained
 xfp.fetch_fp_from_df(df_test, smiles_col = "Smiles", n_bits= 4096, use_chirality = True)
@@ -104,7 +104,7 @@ from xfp.xfp_xgb import XGBFP
 
 # Read the FP2 XGBoost classification model
 model_fp2 = XGBClassifier()
-fp2_model_path = "test_data/herg_model-xgb.json"
+fp2_model_path = "example_data/herg_model-xgb.json"
 
 model_fp2.load_model(fp2_model_path)
 
@@ -112,7 +112,7 @@ model_fp2.load_model(fp2_model_path)
 xfp = XGBFP(model_fp2)
 
 # Load the data (here, the test set - in case you want to visualize the important bits and the chemical substructures they encode in the test set)
-df_test = pd.read_csv('test_data/df_test_herg.tsv', sep= '\t')
+df_test = pd.read_csv('example_data/df_test_herg.tsv', sep= '\t')
 
 # Generate the fingerprints of the radius and number of bits on which the model was trained
 xfp.fetch_fp_from_df(df_test, smiles_col = "Smiles", n_bits= 4096, use_chirality = True)
