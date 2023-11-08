@@ -140,6 +140,9 @@ xfp.generate_feature_importance_plot()
 xfp.generate_bit_analysis_report([807, 3839, 2698, 3291, 2855, 800], report_title = "X-FP XGB FI Report: hERG Test Set")
 ```
 
+## How to contribute?
+If you're interested in contributing, please see our [contribution guidelines](https://github.com/czodrowskilab/x-fp/blob/main/CONTRIBUTING.md).
+
 ## Cite us
 Reference for citation will be added soon.
 
@@ -147,9 +150,8 @@ Reference for citation will be added soon.
 - Marcel Baltruschat ([GitHub](https://github.com/mrcblt))
 - Aishvarya Tandon ([GitHub](https://github.com/aish-tan))
 
-## Acknowledgements
-- Hanna Rieger: Validation case study
-- Adam Adamczyk: Logo design
+## Contributors
+The list of contributors can be found [here](https://github.com/czodrowskilab/x-fp/blob/main/CONTRIBUTORS.md).
 
 ## License
 [MIT License](https://github.com/czodrowskilab/x-fp/blob/main/LICENSE)
