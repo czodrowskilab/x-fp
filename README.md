@@ -20,7 +20,7 @@ A conda-based installation, e.g. Anaconda, Miniconda, Miniforge or Mambaforge, m
 
 To create the conda environment, activate it and install X-FP into the environment, run the following commands:
 ```bash
-mamba env create -f environment_generic.yml
+mamba env create -f environment_generic_minimal.yml
 mamba activate xfp-env
 pip install .
 ```

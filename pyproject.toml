@@ -32,6 +32,12 @@ dependencies = [
     "ipywidgets",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "black",
+    "pytest",
+]
+
 [tool.setuptools]
 include-package-data = true
 

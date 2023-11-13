@@ -1,0 +1,17 @@
+name: xfp-env
+channels:
+  - conda-forge
+dependencies:
+  - python[version='>=3.10,<4']
+  - rdkit[version='>=2022.09']
+  - numpy
+  - pandas
+  - matplotlib
+  - seaborn
+  - tqdm
+  - fpdf2
+  - jupyterlab
+  - shap
+  - ipywidgets
+  - pytest
+  - black
