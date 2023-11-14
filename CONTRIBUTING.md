@@ -63,8 +63,26 @@ If you want to add a new feature, please open a pull request on GitHub. Kindly i
 - A minimal code snippet to demonstrate the new feature.
 - A short description of the test you have added to test the new feature.
 - Documentation updates, if applicable.
-- Run `pytest` to make sure all tests pass. If you have added new tests, please make sure they pass as well.
-
-X-FP uses [black](https://github.com/psf/black) for code formatting. Please make sure your code is formatted using `black` before opening a pull request. You must install `black` in your local environment to do this. Then, simply run `black .` in the root directory of X-FP to format the code. The `black` configurations are already present in `pyproject.toml` file. 
+- Run `pytest` to make sure all tests pass (*instructions below*). If you have added new tests, please make sure they pass as well.
 
 Adapt above steps as necessary for other types of contributions.
+
+### Note for developers
+
+As a developer, please use the developer environment file [environment_generic_dev.yml](https://github.com/czodrowskilab/x-fp/blob/documentation/environment_generic_dev.yml) instead to create a new environment. This environment file additionally installs `black` and `pytest` for code formatting and testing, respectively. 
+
+* Using `mamba`:
+```bash
+mamba env create -f environment_generic_dev.yml
+mamba activate xfp-env
+pip install .
+```
+* Using `pip`
+```bash
+python3 -m venv xfp-env
+source xfp-env/bin/activate
+pip3 install rdkit .[dev]
+```
+To run `pytest`, simply run `pytest` in the root directory of X-FP to run all tests.
+
+X-FP uses [black](https://github.com/psf/black) for code formatting. Please make sure your code is formatted using `black` before opening a pull request. Simply run `black .` in the root directory of X-FP to format the code. The `dev` configurations are already present in `pyproject.toml` file. 
