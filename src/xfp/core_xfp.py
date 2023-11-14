@@ -381,7 +381,7 @@ class FingerprintManager:
         fig.set_ylabel("Substructures per bit")
         fig.set_xlabel(
             f'{"F" if self.use_features else "E"}CFP{self.fp_gen.GetOptions().radius * 2} '
-            f'{self.fp_gen.GetOptions().fpSize} bits'
+            f"{self.fp_gen.GetOptions().fpSize} bits"
         )
 
         if save_fig:
