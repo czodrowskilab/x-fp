@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>xfp package API &#8212; X-FP 1.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css?v=601dbdee" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=50c6ec2c" />
+    <script src="_static/documentation_options.js?v=fc837d61"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="X-FP - eXplainable FingerPrints" href="readme_link.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="readme_link.html" title="X-FP - eXplainable FingerPrints"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">X-FP 1.1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">xfp package API</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="xfp-package-api">
+<h1>xfp package API<a class="headerlink" href="#xfp-package-api" title="Link to this heading">¶</a></h1>
+<section id="module-xfp.core_xfp">
+<span id="xfp-core-xfp-module"></span><h2>xfp.core_xfp module<a class="headerlink" href="#module-xfp.core_xfp" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="xfp.core_xfp.FingerprintManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xfp.core_xfp.</span></span><span class="sig-name descname"><span class="pre">FingerprintManager</span></span><a class="reference internal" href="_modules/xfp/core_xfp.html#FingerprintManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.core_xfp.FingerprintManager" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Fingerprint class</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.core_xfp.FingerprintManager.fetch_fp_from_df">
+<span class="sig-name descname"><span class="pre">fetch_fp_from_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'SMILES'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_bits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_chirality</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">canonicalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/xfp/core_xfp.html#FingerprintManager.fetch_fp_from_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.core_xfp.FingerprintManager.fetch_fp_from_df" title="Link to this definition">¶</a></dt>
+<dd><p>Generate either Morgan Fingerprints or Feature Morgan Fingerprints. Bit info is always included.</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>input_df<span class="classifier">pd.DataFrame</span></dt><dd><p>Pandas DataFrame containing SMILES strings.</p>
+</dd>
+<dt>smiles_col<span class="classifier">str, optional</span></dt><dd><p>Name of the column containing SMILES strings (default is “SMILES”).</p>
+</dd>
+<dt>radius<span class="classifier">int, optional</span></dt><dd><p>Radius of the circular fingerprint (default is 2).</p>
+</dd>
+<dt>n_bits<span class="classifier">int, optional</span></dt><dd><p>Number of bits in the fingerprint (default is 2048).</p>
+</dd>
+<dt>use_features<span class="classifier">bool, optional</span></dt><dd><p>Use Feature Morgan fingerprint or not (default is False).</p>
+</dd>
+<dt>use_chirality<span class="classifier">bool, optional</span></dt><dd><p>Use chirality or not (default is False).</p>
+</dd>
+<dt>mol_col<span class="classifier">str, optional</span></dt><dd><p>Name of the column containing RDKit molecules (default is None).</p>
+</dd>
+<dt>canonicalize<span class="classifier">bool, optional</span></dt><dd><p>If True, molecules are canonicalized (default is True).</p>
+</dd>
+</dl>
+</section>
+<section id="raises">
+<h3>Raises<a class="headerlink" href="#raises" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>ValueError</dt><dd><p>If either of the SMILES or Molecules column is not present in the input DataFrame.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.core_xfp.FingerprintManager.fetch_fp_from_mol">
+<span class="sig-name descname"><span class="pre">fetch_fp_from_mol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_mol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_bits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_chirality</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/xfp/core_xfp.html#FingerprintManager.fetch_fp_from_mol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.core_xfp.FingerprintManager.fetch_fp_from_mol" title="Link to this definition">¶</a></dt>
+<dd><p>Generate Morgan fingerprint from a RDKit molecule object.</p>
+<section id="id1">
+<h3>Parameters<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>in_mol<span class="classifier">Chem.Mol</span></dt><dd><p>RDKit molecule object</p>
+</dd>
+<dt>radius<span class="classifier">int, optional</span></dt><dd><p>Radius of the circular fingerprint (default is 2).</p>
+</dd>
+<dt>n_bits<span class="classifier">int, optional</span></dt><dd><p>Number of bits in the fingerprint (default is 2048).</p>
+</dd>
+<dt>use_features<span class="classifier">bool, optional</span></dt><dd><p>Use Feature Morgan fingerprint or not (default is False).</p>
+</dd>
+<dt>use_chirality<span class="classifier">bool, optional</span></dt><dd><p>Use chirality or not (default is False).</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h3>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>tuple[np.ndarray, dict[str, list[int]]]</dt><dd><p>Returning a two-element tuple containing the fingerprint as a numpy array as the first element and
+bit info as a dictionary as the second element.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.core_xfp.FingerprintManager.fetch_fp_from_smiles">
+<span class="sig-name descname"><span class="pre">fetch_fp_from_smiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_smiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_bits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_chirality</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/xfp/core_xfp.html#FingerprintManager.fetch_fp_from_smiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.core_xfp.FingerprintManager.fetch_fp_from_smiles" title="Link to this definition">¶</a></dt>
+<dd><p>Generate Morgan fingerprint from a SMILES string.</p>
+<section id="id2">
+<h3>Parameters<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>in_smiles<span class="classifier">str</span></dt><dd><p>SMILES string</p>
+</dd>
+<dt>radius<span class="classifier">int, optional</span></dt><dd><p>Radius of the circular fingerprint (default is 2).</p>
+</dd>
+<dt>n_bits<span class="classifier">int, optional</span></dt><dd><p>Number of bits in the fingerprint (default is 2048).</p>
+</dd>
+<dt>use_features<span class="classifier">bool, optional</span></dt><dd><p>Use Feature Morgan fingerprint or not (default is False).</p>
+</dd>
+<dt>use_chirality<span class="classifier">bool, optional</span></dt><dd><p>Use chirality or not (default is False).</p>
+</dd>
+</dl>
+</section>
+<section id="id3">
+<h3>Returns<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>morgan_fp_as_array<span class="classifier">tuple[np.ndarray, dict[str, list[int]]]</span></dt><dd><p>Returning a two-element tuple containing the fingerprint as a numpy array as the first element and
+bit info as a dictionary as the second element.</p>
+</dd>
+</dl>
+</section>
+<section id="id4">
+<h3>Raises<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>ValueError</dt><dd><p>If the SMILES string is invalid.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.core_xfp.FingerprintManager.generate_frags">
+<span class="sig-name descname"><span class="pre">generate_frags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_connectivity_invariants</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/xfp/core_xfp.html#FingerprintManager.generate_frags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.core_xfp.FingerprintManager.generate_frags" title="Link to this definition">¶</a></dt>
+<dd><p>Generates fragments for all molecules and all nonzero bits in the dataset saved to this instance. The dataset
+must be saved to this instance using the <cite>fetch_fp_from_df()</cite> method.</p>
+<section id="id5">
+<h3>Parameters<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>verbose<span class="classifier">bool, optional</span></dt><dd><p>If True, status messages are printed (default is True).</p>
+</dd>
+<dt>n_jobs<span class="classifier">int, optional</span></dt><dd><p>Number of cores to use for parallelization (default is 1).</p>
+</dd>
+<dt>include_connectivity_invariants<span class="classifier">bool, optional</span></dt><dd><p>If True, connectivity invariants are included in the fragments (default is True).</p>
+</dd>
+</dl>
+</section>
+<section id="id6">
+<h3>Raises<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>ValueError</dt><dd><p>If no input data is present, i.e. <cite>fetch_fp_from_df()</cite> was not called already.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.core_xfp.FingerprintManager.get_substruct_images_per_bit">
+<span class="sig-name descname"><span class="pre">get_substruct_images_per_bit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_bit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smarts_as_legends</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/xfp/core_xfp.html#FingerprintManager.get_substruct_images_per_bit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.core_xfp.FingerprintManager.get_substruct_images_per_bit" title="Link to this definition">¶</a></dt>
+<dd><p>Generates an SVG image of substructures present in a query bit.</p>
+<section id="id7">
+<h3>Parameters<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>query_bit<span class="classifier">int</span></dt><dd><p>Bit for which the substructure images are to be generated.</p>
+</dd>
+<dt>smarts_as_legends<span class="classifier">bool, optional</span></dt><dd><p>If True, substructure SMARTS are used as legends (default is False).</p>
+</dd>
+</dl>
+</section>
+<section id="id8">
+<h3>Returns<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>str</dt><dd><p>SVG image as a string of substructures present in a query bit. This image should be saved separately.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.core_xfp.FingerprintManager.make_substruct_per_bit_plot">
+<span class="sig-name descname"><span class="pre">make_substruct_per_bit_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dpi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_fig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/xfp/core_xfp.html#FingerprintManager.make_substruct_per_bit_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.core_xfp.FingerprintManager.make_substruct_per_bit_plot" title="Link to this definition">¶</a></dt>
+<dd><p>Generate substructures per bit plot. This plot is useful to understand the distribution of substructures encoded
+in each bit.</p>
+<section id="id9">
+<h3>Parameters<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>dpi<span class="classifier">int, optional</span></dt><dd><p>Dots per inch (default is 100).</p>
+</dd>
+<dt>save_fig<span class="classifier">bool, optional</span></dt><dd><p>If True, the figure is saved (default is False).</p>
+</dd>
+<dt>fig_name<span class="classifier">str, optional</span></dt><dd><p>Name of the plot (default is None).</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.core_xfp.FingerprintManager.substruct_counter_per_bit">
+<span class="sig-name descname"><span class="pre">substruct_counter_per_bit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_bit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/xfp/core_xfp.html#FingerprintManager.substruct_counter_per_bit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.core_xfp.FingerprintManager.substruct_counter_per_bit" title="Link to this definition">¶</a></dt>
+<dd><p>Counts the frequency of the substructures present in a query bit. Total occurrences will calculate all the
+occurrences of a substructure in the dataset, including multiple occurrences in a molecule. Unique occurrences
+will calculate the number of molecules in which a substructure is present.</p>
+<section id="id10">
+<h3>Parameters<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>query_bit<span class="classifier">int</span></dt><dd><p>Bit for which the substructure frequency is to be calculated.</p>
+</dd>
+<dt>verbose<span class="classifier">bool, optional</span></dt><dd><p>If True, status messages are printed (default is False).</p>
+</dd>
+</dl>
+</section>
+<section id="id11">
+<h3>Returns<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>pd.DataFrame</dt><dd><p>Pandas DataFrame where substructures (as SMARTS) are present with their total and unique occurrences.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-xfp.report_maker">
+<span id="xfp-report-maker-module"></span><h2>xfp.report_maker module<a class="headerlink" href="#module-xfp.report_maker" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="xfp.report_maker.BitAnalysis">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xfp.report_maker.</span></span><span class="sig-name descname"><span class="pre">BitAnalysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orientation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'portrait'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mm'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'A4'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font_cache_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DEPRECATED'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xfp/report_maker.html#BitAnalysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.report_maker.BitAnalysis" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FPDF</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.report_maker.BitAnalysis.add_end_note">
+<span class="sig-name descname"><span class="pre">add_end_note</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_importance_note</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/xfp/report_maker.html#BitAnalysis.add_end_note"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.report_maker.BitAnalysis.add_end_note" title="Link to this definition">¶</a></dt>
+<dd><p>Generate end note of the report.</p>
+<section id="id12">
+<h3>Parameters<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>feature_importance_note<span class="classifier">str, optional</span></dt><dd><p>Path to the text file containing the information about feature importance (default is None).</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.report_maker.BitAnalysis.chapter_title">
+<span class="sig-name descname"><span class="pre">chapter_title</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_bit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/xfp/report_maker.html#BitAnalysis.chapter_title"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.report_maker.BitAnalysis.chapter_title" title="Link to this definition">¶</a></dt>
+<dd><p>Generate chapter title of the report.</p>
+<section id="id13">
+<h3>Parameters<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>in_bit<span class="classifier">int</span></dt><dd><p>Bit of choice for which the analysis is to be performed</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.report_maker.BitAnalysis.footer">
+<span class="sig-name descname"><span class="pre">footer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/xfp/report_maker.html#BitAnalysis.footer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.report_maker.BitAnalysis.footer" title="Link to this definition">¶</a></dt>
+<dd><p>Generate footer of the report.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.report_maker.BitAnalysis.header">
+<span class="sig-name descname"><span class="pre">header</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/xfp/report_maker.html#BitAnalysis.header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.report_maker.BitAnalysis.header" title="Link to this definition">¶</a></dt>
+<dd><p>Generate header of the report.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.report_maker.BitAnalysis.intro_page">
+<span class="sig-name descname"><span class="pre">intro_page</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overall_feature_importance_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_stamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/xfp/report_maker.html#BitAnalysis.intro_page"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.report_maker.BitAnalysis.intro_page" title="Link to this definition">¶</a></dt>
+<dd><p>Generate an introduction page of the report where the overall feature importance plot is displayed.</p>
+<section id="id14">
+<h3>Parameters<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>overall_feature_importance_image<span class="classifier">str</span></dt><dd><p>Image of the overall feature importance plot.</p>
+</dd>
+<dt>img_text<span class="classifier">str</span></dt><dd><p>Text to be displayed above the overall feature importance image.</p>
+</dd>
+<dt>report_title<span class="classifier">str, optional</span></dt><dd><p>Title of the report provided by the user (default is “”).</p>
+</dd>
+<dt>time_stamp<span class="classifier">bool, optional</span></dt><dd><p>Add time stamp to the report footer or not (default is True). The time is local and is formatted as
+‘%Y-%m-%d %H:%M:%S’.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.report_maker.BitAnalysis.print_chapter">
+<span class="sig-name descname"><span class="pre">print_chapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_bit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol_importance_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol_importance_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_compounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/xfp/report_maker.html#BitAnalysis.print_chapter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.report_maker.BitAnalysis.print_chapter" title="Link to this definition">¶</a></dt>
+<dd><p>Generate chapter of the report.</p>
+<section id="id15">
+<h3>Parameters<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>in_bit<span class="classifier">int</span></dt><dd><p>Bit of choice for which the analysis is to be performed.</p>
+</dd>
+<dt>mol_importance_image<span class="classifier">str</span></dt><dd><p>Image of the feature importance plot for the query bit.</p>
+</dd>
+<dt>mol_image<span class="classifier">str</span></dt><dd><p>Image of the substructure plot for the query bit.</p>
+</dd>
+<dt>in_df<span class="classifier">pd.DataFrame</span></dt><dd><p>Pandas DataFrame containing the substructure frequency table for the query bit.</p>
+</dd>
+<dt>mol_importance_text<span class="classifier">str, optional</span></dt><dd><p>Text to be displayed above the feature importance image (default is None).</p>
+</dd>
+<dt>n_compounds<span class="classifier">int, optional</span></dt><dd><p>Total number of compounds in the input dataframe (default is None).</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-xfp.xfp_tree_explainer">
+<span id="xfp-xfp-tree-explainer-module"></span><h2>xfp.xfp_tree_explainer module<a class="headerlink" href="#module-xfp.xfp_tree_explainer" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="xfp.xfp_tree_explainer.XFPTreeExplainer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xfp.xfp_tree_explainer.</span></span><span class="sig-name descname"><span class="pre">XFPTreeExplainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_tree_explainer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tree</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xfp/xfp_tree_explainer.html#XFPTreeExplainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.xfp_tree_explainer.XFPTreeExplainer" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#xfp.core_xfp.FingerprintManager" title="xfp.core_xfp.FingerprintManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">FingerprintManager</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.xfp_tree_explainer.XFPTreeExplainer.generate_bit_analysis_report">
+<span class="sig-name descname"><span class="pre">generate_bit_analysis_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bit_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_stamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'X-FP_Bit_Analysis_Report'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/xfp/xfp_tree_explainer.html#XFPTreeExplainer.generate_bit_analysis_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.xfp_tree_explainer.XFPTreeExplainer.generate_bit_analysis_report" title="Link to this definition">¶</a></dt>
+<dd><p>Generate a PDF report for the analysis of the query bits.</p>
+<section id="id16">
+<h3>Parameters:<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>bit_list<span class="classifier">list[int]</span></dt><dd><p>List of bits for which the analysis is to be performed.</p>
+</dd>
+<dt>report_title<span class="classifier">str, optional</span></dt><dd><p>Title of the report provided by the user (default is “”).</p>
+</dd>
+<dt>time_stamp<span class="classifier">bool, optional</span></dt><dd><p>Add time stamp to the report footer or not (default is True). The time is local and is formatted as
+‘%Y-%m-%d %H:%M:%S’.</p>
+</dd>
+<dt>file_name<span class="classifier">str, optional</span></dt><dd><p>Name of the report file (default is “X-FP_Bit_Analysis_Report”).</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.xfp_tree_explainer.XFPTreeExplainer.generate_shap_summary_plot">
+<span class="sig-name descname"><span class="pre">generate_shap_summary_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_display</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_fig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">300</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/xfp/xfp_tree_explainer.html#XFPTreeExplainer.generate_shap_summary_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.xfp_tree_explainer.XFPTreeExplainer.generate_shap_summary_plot" title="Link to this definition">¶</a></dt>
+<dd><p>Generate a SHAP summary plot.</p>
+<section id="id17">
+<h3>Parameters<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>max_display<span class="classifier">int, optional</span></dt><dd><p>Maximum number of features to plot (default is 10).</p>
+</dd>
+<dt>save_fig<span class="classifier">str, optional</span></dt><dd><p>If provided, save the figure instead of showing it (default is “”).</p>
+</dd>
+<dt>dpi<span class="classifier">int, optional</span></dt><dd><p>Dots per inch (DPI) for the figure (default is 300).</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.xfp_tree_explainer.XFPTreeExplainer.generate_shap_values">
+<span class="sig-name descname"><span class="pre">generate_shap_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_shap_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/xfp/xfp_tree_explainer.html#XFPTreeExplainer.generate_shap_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.xfp_tree_explainer.XFPTreeExplainer.generate_shap_values" title="Link to this definition">¶</a></dt>
+<dd><p>Generate SHAP values of the input fingerprint using the Tree Explainer.</p>
+<section id="id18">
+<h3>Parameters<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>return_shap_values<span class="classifier">bool, optional</span></dt><dd><p>Return the SHAP values or not (default is False).</p>
+</dd>
+</dl>
+</section>
+<section id="id19">
+<h3>Returns<a class="headerlink" href="#id19" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>np.ndarray or None</dt><dd><p>SHAP values of the input fingerprint in <cite>self.fp</cite> if <cite>return_shap_values</cite> is True, None otherwise.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.xfp_tree_explainer.XFPTreeExplainer.generate_single_shap_summary_plot">
+<span class="sig-name descname"><span class="pre">generate_single_shap_summary_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_bit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_fig_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/xfp/xfp_tree_explainer.html#XFPTreeExplainer.generate_single_shap_summary_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.xfp_tree_explainer.XFPTreeExplainer.generate_single_shap_summary_plot" title="Link to this definition">¶</a></dt>
+<dd><p>Saves a single SHAP summary plot of the SHAP values of the query bit.</p>
+<section id="id20">
+<h3>Parameters<a class="headerlink" href="#id20" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>query_bit<span class="classifier">int</span></dt><dd><p>Bit for which the SHAP Summary Plot is to be generated.</p>
+</dd>
+<dt>return_fig_path<span class="classifier">bool, optional</span></dt><dd><p>Return the path of the figure or not (default is True).</p>
+</dd>
+</dl>
+</section>
+<section id="id21">
+<h3>Returns<a class="headerlink" href="#id21" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>str or None</dt><dd><p>Path of the figure if <cite>return_fig_path</cite> is True, None otherwise.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-xfp.xfp_xgb">
+<span id="xfp-xfp-xgb-module"></span><h2>xfp.xfp_xgb module<a class="headerlink" href="#module-xfp.xfp_xgb" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="xfp.xfp_xgb.XGBFP">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xfp.xfp_xgb.</span></span><span class="sig-name descname"><span class="pre">XGBFP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_xgboost_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">XGBClassifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xfp/xfp_xgb.html#XGBFP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.xfp_xgb.XGBFP" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#xfp.core_xfp.FingerprintManager" title="xfp.core_xfp.FingerprintManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">FingerprintManager</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.xfp_xgb.XGBFP.generate_bit_analysis_report">
+<span class="sig-name descname"><span class="pre">generate_bit_analysis_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bit_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_stamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'X-FP_Bit_Analysis_Report'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/xfp/xfp_xgb.html#XGBFP.generate_bit_analysis_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.xfp_xgb.XGBFP.generate_bit_analysis_report" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a bit analysis PDF report for the query bits.</p>
+<section id="id22">
+<h3>Parameters<a class="headerlink" href="#id22" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>bit_list<span class="classifier">list[int]</span></dt><dd><p>List of bits for which the bit analysis report is to be generated.</p>
+</dd>
+<dt>report_title<span class="classifier">str, optional</span></dt><dd><p>Title of the report (default is “”).</p>
+</dd>
+<dt>time_stamp<span class="classifier">bool, optional</span></dt><dd><p>Whether to add a time stamp to the report or not (default is True).</p>
+</dd>
+<dt>file_name<span class="classifier">str, optional</span></dt><dd><p>Name of the report file (default is “X-FP_Bit_Analysis_Report”).</p>
+</dd>
+</dl>
+</section>
+<section id="id23">
+<h3>Raises<a class="headerlink" href="#id23" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>ValueError</dt><dd><p>If the user hasn’t run the <cite>.make_feature_importance_df()</cite> method first.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.xfp_xgb.XGBFP.generate_feature_importance_plot">
+<span class="sig-name descname"><span class="pre">generate_feature_importance_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">importance_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_importance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_fig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/xfp/xfp_xgb.html#XGBFP.generate_feature_importance_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.xfp_xgb.XGBFP.generate_feature_importance_plot" title="Link to this definition">¶</a></dt>
+<dd><p>Generate the feature importance plot.</p>
+<section id="id24">
+<h3>Parameters<a class="headerlink" href="#id24" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>importance_type<span class="classifier">str, optional</span></dt><dd><p>Type of importance to be used for plotting (default is None).
+If the primary_importance_type is already set, then that will be used for plotting.</p>
+</dd>
+<dt>max_importance<span class="classifier">int, optional</span></dt><dd><p>Maximum number of bits to be plotted (default is 10).</p>
+</dd>
+<dt>save_fig<span class="classifier">str, optional</span></dt><dd><p>Path to save the figure (default is “”, i.e. the image is not saved).</p>
+</dd>
+</dl>
+</section>
+<section id="id25">
+<h3>Raises<a class="headerlink" href="#id25" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>ValueError</dt><dd><p>If the user hasn’t run the <cite>.make_feature_importance_df()</cite> method first, or if the user doesn’t provide an
+importance type or has not set the primary_importance_type, or if the user provides an invalid importance
+type.</p>
+</dd>
+</dl>
+</section>
+<section id="notes">
+<h3>Notes<a class="headerlink" href="#notes" title="Link to this heading">¶</a></h3>
+<p>Displays the plot if save_fig is not provided.</p>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.xfp_xgb.XGBFP.make_feature_importance_df">
+<span class="sig-name descname"><span class="pre">make_feature_importance_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">importance_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calculate_all_importances</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/xfp/xfp_xgb.html#XGBFP.make_feature_importance_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.xfp_xgb.XGBFP.make_feature_importance_df" title="Link to this definition">¶</a></dt>
+<dd><p>Make a DataFrame containing queried XGBoost feature importance.</p>
+<section id="id26">
+<h3>Parameters<a class="headerlink" href="#id26" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>importance_type<span class="classifier">str, optional</span></dt><dd><p>Type of importance to be calculated (default is None). The options are “weight”, “gain”, “cover”,
+“total_gain”, and “total_cover”.</p>
+</dd>
+<dt>calculate_all_importances<span class="classifier">bool, optional</span></dt><dd><p>Additionally calculate all the importances (default is False).</p>
+</dd>
+</dl>
+</section>
+<section id="id27">
+<h3>Raises<a class="headerlink" href="#id27" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>ValueError</dt><dd><p>If the user doesn’t provide either importance_type or calculate_all_importances or if the provided
+importance_type is invalid.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xfp.xfp_xgb.XGBFP.single_feature_importance_plot">
+<span class="sig-name descname"><span class="pre">single_feature_importance_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_bit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_fig_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/xfp/xfp_xgb.html#XGBFP.single_feature_importance_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xfp.xfp_xgb.XGBFP.single_feature_importance_plot" title="Link to this definition">¶</a></dt>
+<dd><p>Saves a feature importance plot for a single bit.</p>
+<section id="id28">
+<h3>Parameters<a class="headerlink" href="#id28" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>query_bit<span class="classifier">int</span></dt><dd><p>Bit for which the feature importance plot is to be generated.</p>
+</dd>
+<dt>return_fig_path<span class="classifier">bool, optional</span></dt><dd><p>Whether to return the path to the figure or not (default is True).</p>
+</dd>
+</dl>
+</section>
+<section id="id29">
+<h3>Returns<a class="headerlink" href="#id29" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>str or None</dt><dd><p>Path to the figure if <cite>return_fig_path</cite> is True, None otherwise.</p>
+</dd>
+</dl>
+</section>
+<section id="id30">
+<h3>Raises<a class="headerlink" href="#id30" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>ValueError</dt><dd><p>If the user hasn’t run the <cite>.make_feature_importance_df()</cite> method first.</p>
+</dd>
+</dl>
+</section>
+<section id="id31">
+<h3>Notes<a class="headerlink" href="#id31" title="Link to this heading">¶</a></h3>
+<p>The plot is saved in the folder with the name:
+Bit_{query_bit}_Feature_Importance_{self.primary_importance_type}_Plot.png</p>
+</section>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-xfp">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-xfp" title="Link to this heading">¶</a></h2>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/X-FP_logo.png" alt="Logo"/>
+            </a></p>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">xfp package API</a><ul>
+<li><a class="reference internal" href="#module-xfp.core_xfp">xfp.core_xfp module</a><ul>
+<li><a class="reference internal" href="#xfp.core_xfp.FingerprintManager"><code class="docutils literal notranslate"><span class="pre">FingerprintManager</span></code></a><ul>
+<li><a class="reference internal" href="#xfp.core_xfp.FingerprintManager.fetch_fp_from_df"><code class="docutils literal notranslate"><span class="pre">FingerprintManager.fetch_fp_from_df()</span></code></a></li>
+<li><a class="reference internal" href="#xfp.core_xfp.FingerprintManager.fetch_fp_from_mol"><code class="docutils literal notranslate"><span class="pre">FingerprintManager.fetch_fp_from_mol()</span></code></a></li>
+<li><a class="reference internal" href="#xfp.core_xfp.FingerprintManager.fetch_fp_from_smiles"><code class="docutils literal notranslate"><span class="pre">FingerprintManager.fetch_fp_from_smiles()</span></code></a></li>
+<li><a class="reference internal" href="#xfp.core_xfp.FingerprintManager.generate_frags"><code class="docutils literal notranslate"><span class="pre">FingerprintManager.generate_frags()</span></code></a></li>
+<li><a class="reference internal" href="#xfp.core_xfp.FingerprintManager.get_substruct_images_per_bit"><code class="docutils literal notranslate"><span class="pre">FingerprintManager.get_substruct_images_per_bit()</span></code></a></li>
+<li><a class="reference internal" href="#xfp.core_xfp.FingerprintManager.make_substruct_per_bit_plot"><code class="docutils literal notranslate"><span class="pre">FingerprintManager.make_substruct_per_bit_plot()</span></code></a></li>
+<li><a class="reference internal" href="#xfp.core_xfp.FingerprintManager.substruct_counter_per_bit"><code class="docutils literal notranslate"><span class="pre">FingerprintManager.substruct_counter_per_bit()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-xfp.report_maker">xfp.report_maker module</a><ul>
+<li><a class="reference internal" href="#xfp.report_maker.BitAnalysis"><code class="docutils literal notranslate"><span class="pre">BitAnalysis</span></code></a><ul>
+<li><a class="reference internal" href="#xfp.report_maker.BitAnalysis.add_end_note"><code class="docutils literal notranslate"><span class="pre">BitAnalysis.add_end_note()</span></code></a></li>
+<li><a class="reference internal" href="#xfp.report_maker.BitAnalysis.chapter_title"><code class="docutils literal notranslate"><span class="pre">BitAnalysis.chapter_title()</span></code></a></li>
+<li><a class="reference internal" href="#xfp.report_maker.BitAnalysis.footer"><code class="docutils literal notranslate"><span class="pre">BitAnalysis.footer()</span></code></a></li>
+<li><a class="reference internal" href="#xfp.report_maker.BitAnalysis.header"><code class="docutils literal notranslate"><span class="pre">BitAnalysis.header()</span></code></a></li>
+<li><a class="reference internal" href="#xfp.report_maker.BitAnalysis.intro_page"><code class="docutils literal notranslate"><span class="pre">BitAnalysis.intro_page()</span></code></a></li>
+<li><a class="reference internal" href="#xfp.report_maker.BitAnalysis.print_chapter"><code class="docutils literal notranslate"><span class="pre">BitAnalysis.print_chapter()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-xfp.xfp_tree_explainer">xfp.xfp_tree_explainer module</a><ul>
+<li><a class="reference internal" href="#xfp.xfp_tree_explainer.XFPTreeExplainer"><code class="docutils literal notranslate"><span class="pre">XFPTreeExplainer</span></code></a><ul>
+<li><a class="reference internal" href="#xfp.xfp_tree_explainer.XFPTreeExplainer.generate_bit_analysis_report"><code class="docutils literal notranslate"><span class="pre">XFPTreeExplainer.generate_bit_analysis_report()</span></code></a></li>
+<li><a class="reference internal" href="#xfp.xfp_tree_explainer.XFPTreeExplainer.generate_shap_summary_plot"><code class="docutils literal notranslate"><span class="pre">XFPTreeExplainer.generate_shap_summary_plot()</span></code></a></li>
+<li><a class="reference internal" href="#xfp.xfp_tree_explainer.XFPTreeExplainer.generate_shap_values"><code class="docutils literal notranslate"><span class="pre">XFPTreeExplainer.generate_shap_values()</span></code></a></li>
+<li><a class="reference internal" href="#xfp.xfp_tree_explainer.XFPTreeExplainer.generate_single_shap_summary_plot"><code class="docutils literal notranslate"><span class="pre">XFPTreeExplainer.generate_single_shap_summary_plot()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-xfp.xfp_xgb">xfp.xfp_xgb module</a><ul>
+<li><a class="reference internal" href="#xfp.xfp_xgb.XGBFP"><code class="docutils literal notranslate"><span class="pre">XGBFP</span></code></a><ul>
+<li><a class="reference internal" href="#xfp.xfp_xgb.XGBFP.generate_bit_analysis_report"><code class="docutils literal notranslate"><span class="pre">XGBFP.generate_bit_analysis_report()</span></code></a></li>
+<li><a class="reference internal" href="#xfp.xfp_xgb.XGBFP.generate_feature_importance_plot"><code class="docutils literal notranslate"><span class="pre">XGBFP.generate_feature_importance_plot()</span></code></a></li>
+<li><a class="reference internal" href="#xfp.xfp_xgb.XGBFP.make_feature_importance_df"><code class="docutils literal notranslate"><span class="pre">XGBFP.make_feature_importance_df()</span></code></a></li>
+<li><a class="reference internal" href="#xfp.xfp_xgb.XGBFP.single_feature_importance_plot"><code class="docutils literal notranslate"><span class="pre">XGBFP.single_feature_importance_plot()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-xfp">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="readme_link.html"
+                          title="previous chapter">X-FP - eXplainable FingerPrints</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/xfp.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="readme_link.html" title="X-FP - eXplainable FingerPrints"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">X-FP 1.1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">xfp package API</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2022-2023, Marcel Baltruschat and Aishvarya Tandon.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

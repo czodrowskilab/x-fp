@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>xfp.xfp_xgb &#8212; X-FP 1.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=601dbdee" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=50c6ec2c" />
+    <script src="../../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">X-FP 1.1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">xfp.xfp_xgb</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for xfp.xfp_xgb</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">importlib.resources</span> <span class="k">as</span> <span class="nn">pkg_resources</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">xgboost</span> <span class="k">as</span> <span class="nn">xgb</span>
+<span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBClassifier</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">resources</span>
+<span class="kn">from</span> <span class="nn">.core_xfp</span> <span class="kn">import</span> <span class="n">FingerprintManager</span>
+<span class="kn">from</span> <span class="nn">.report_maker</span> <span class="kn">import</span> <span class="n">BitAnalysis</span>
+
+
+<div class="viewcode-block" id="XGBFP">
+<a class="viewcode-back" href="../../xfp.html#xfp.xfp_xgb.XGBFP">[docs]</a>
+<span class="k">class</span> <span class="nc">XGBFP</span><span class="p">(</span><span class="n">FingerprintManager</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_xgboost_model</span><span class="p">:</span> <span class="n">xgb</span><span class="o">.</span><span class="n">XGBClassifier</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the XGBFP class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        in_xgboost_model : xgboost.XGBClassifier</span>
+<span class="sd">            XGBoost Classifier model to use.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the input model is not a valid XGBoost Classifier model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xgboost_model</span> <span class="o">=</span> <span class="n">in_xgboost_model</span>
+
+        <span class="c1"># Check whether the model is a valid XGBoost Classifier model or not</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xgboost_model</span><span class="p">,</span> <span class="n">xgb</span><span class="o">.</span><span class="n">XGBClassifier</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid object. Please input valid XGBoost Classifier model&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_folder_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Asks for input for folder (with path) to store the images and the report.</span>
+<span class="sd">        Validates the path and creates the folder if it doesn&#39;t exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Ask for input for folder (with path) to store the images and the report</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folder_name</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Enter the folder name (with path) to store the images and the report. The default is &#39;XFP_XGBoost_Classifier_(today&#39;s date)&#39; &quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Validate the path and create the folder if it doesn&#39;t exist</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">folder_name</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="c1"># Add date and a folder name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">folder_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;XFP_XGBoost_Classifier_</span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_name</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_name</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_feature_importance</span><span class="p">(</span>
+        <span class="n">in_model</span><span class="p">:</span> <span class="n">XGBClassifier</span><span class="p">,</span>
+        <span class="n">importance_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;weight&quot;</span><span class="p">,</span>
+        <span class="n">n_bits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2048</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get feature importance of the XGBoost Classifier model.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        in_model : xgboost.XGBClassifier</span>
+<span class="sd">            XGBoost Classifier model</span>
+<span class="sd">        importance_type : str, optional</span>
+<span class="sd">            Type of importance to be calculated (default is &quot;weight&quot;). The options are &quot;weight&quot;, &quot;gain&quot;, &quot;cover&quot;,</span>
+<span class="sd">            &quot;total_gain&quot;, and &quot;total_cover&quot;.</span>
+<span class="sd">        n_bits : int, optional</span>
+<span class="sd">            Number of bits in the fingerprint (default is 2048).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list[float]</span>
+<span class="sd">            List of feature importance values for all the bits in the fingerprint.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This function is necessary because there isn&#39;t a straight-forward way to get feature importance from a XGBoost</span>
+<span class="sd">        model for all (query) features. XGBoost doesn&#39;t store zero-importance features, plus there are different feature</span>
+<span class="sd">        importance types to be considered.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Assign names to the bits in the model object</span>
+        <span class="n">bit_names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Bit </span><span class="si">{</span><span class="n">bit</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_bits</span><span class="p">)]</span>
+        <span class="n">in_model</span><span class="o">.</span><span class="n">get_booster</span><span class="p">()</span><span class="o">.</span><span class="n">feature_names</span> <span class="o">=</span> <span class="n">bit_names</span>
+
+        <span class="c1"># Get feature importance</span>
+        <span class="n">importance_score</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">bit_name</span> <span class="ow">in</span> <span class="n">bit_names</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># XGBoost doesn&#39;t store zero-importance features</span>
+                <span class="n">importance_score</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">in_model</span><span class="o">.</span><span class="n">get_booster</span><span class="p">()</span><span class="o">.</span><span class="n">get_score</span><span class="p">(</span><span class="n">importance_type</span><span class="o">=</span><span class="n">importance_type</span><span class="p">)[</span><span class="n">bit_name</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">importance_score</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">importance_score</span>
+
+<div class="viewcode-block" id="XGBFP.make_feature_importance_df">
+<a class="viewcode-back" href="../../xfp.html#xfp.xfp_xgb.XGBFP.make_feature_importance_df">[docs]</a>
+    <span class="k">def</span> <span class="nf">make_feature_importance_df</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">importance_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">calculate_all_importances</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make a DataFrame containing queried XGBoost feature importance.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        importance_type : str, optional</span>
+<span class="sd">            Type of importance to be calculated (default is None). The options are &quot;weight&quot;, &quot;gain&quot;, &quot;cover&quot;,</span>
+<span class="sd">            &quot;total_gain&quot;, and &quot;total_cover&quot;.</span>
+<span class="sd">        calculate_all_importances : bool, optional</span>
+<span class="sd">            Additionally calculate all the importances (default is False).</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the user doesn&#39;t provide either importance_type or calculate_all_importances or if the provided</span>
+<span class="sd">            importance_type is invalid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">importance_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+        <span class="c1"># validate if the user entered either importance type or calculate_all_importances</span>
+        <span class="k">if</span> <span class="n">importance_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">calculate_all_importances</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Please either enter an importance type or calculate all the importances.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># validate if the user entered correct importance type</span>
+        <span class="k">if</span> <span class="n">importance_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="s2">&quot;gain&quot;</span><span class="p">,</span> <span class="s2">&quot;cover&quot;</span><span class="p">,</span> <span class="s2">&quot;total_gain&quot;</span><span class="p">,</span> <span class="s2">&quot;total_cover&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid importance type. Please enter a valid importance type.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">importance_df</span><span class="p">[</span><span class="s2">&quot;Bits&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Bit </span><span class="si">{</span><span class="n">bit</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fp_gen</span><span class="o">.</span><span class="n">GetOptions</span><span class="p">()</span><span class="o">.</span><span class="n">fpSize</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">calculate_all_importances</span><span class="p">:</span>
+            <span class="n">importance_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="s2">&quot;gain&quot;</span><span class="p">,</span> <span class="s2">&quot;cover&quot;</span><span class="p">,</span> <span class="s2">&quot;total_gain&quot;</span><span class="p">,</span> <span class="s2">&quot;total_cover&quot;</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Calculating all importances: </span><span class="si">{</span><span class="n">importance_types</span><span class="si">}</span><span class="s2">. Please wait.&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">importance_type</span> <span class="ow">in</span> <span class="n">importance_types</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">importance_df</span><span class="p">[</span><span class="n">importance_type</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_feature_importance</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">xgboost_model</span><span class="p">,</span> <span class="n">importance_type</span><span class="o">=</span><span class="n">importance_type</span><span class="p">,</span> <span class="n">n_bits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fp_gen</span><span class="o">.</span><span class="n">GetOptions</span><span class="p">()</span><span class="o">.</span><span class="n">fpSize</span>
+                <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done.&quot;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">importance_df</span><span class="p">[</span><span class="n">importance_type</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_feature_importance</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">xgboost_model</span><span class="p">,</span> <span class="n">importance_type</span><span class="o">=</span><span class="n">importance_type</span><span class="p">,</span> <span class="n">n_bits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fp_gen</span><span class="o">.</span><span class="n">GetOptions</span><span class="p">()</span><span class="o">.</span><span class="n">fpSize</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">importance_type</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">primary_importance_type</span> <span class="o">=</span> <span class="n">importance_type</span></div>
+
+
+<div class="viewcode-block" id="XGBFP.generate_feature_importance_plot">
+<a class="viewcode-back" href="../../xfp.html#xfp.xfp_xgb.XGBFP.generate_feature_importance_plot">[docs]</a>
+    <span class="k">def</span> <span class="nf">generate_feature_importance_plot</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">importance_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">max_importance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">save_fig</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate the feature importance plot.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        importance_type : str, optional</span>
+<span class="sd">            Type of importance to be used for plotting (default is None).</span>
+<span class="sd">            If the primary_importance_type is already set, then that will be used for plotting.</span>
+<span class="sd">        max_importance : int, optional</span>
+<span class="sd">            Maximum number of bits to be plotted (default is 10).</span>
+<span class="sd">        save_fig : str, optional</span>
+<span class="sd">            Path to save the figure (default is &quot;&quot;, i.e. the image is not saved).</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the user hasn&#39;t run the `.make_feature_importance_df()` method first, or if the user doesn&#39;t provide an</span>
+<span class="sd">            importance type or has not set the primary_importance_type, or if the user provides an invalid importance</span>
+<span class="sd">            type.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Displays the plot if save_fig is not provided.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># validate if self.importance_df exists</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">importance_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Please run the make_feature_importance_df() method first.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Ensuring that an importance type is selected for plotting</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_importance_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">importance_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Please enter an importance type.&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">importance_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">importance_df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid importance type. Please enter a valid importance type.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">primary_importance_type</span> <span class="o">=</span> <span class="n">importance_type</span>
+
+        <span class="c1"># Sort the dataframe by the primary importance type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">importance_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">primary_importance_type</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Plotting the feature importance</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span>
+            <span class="n">y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importance_df</span><span class="p">[</span><span class="s2">&quot;Bits&quot;</span><span class="p">][:</span><span class="n">max_importance</span><span class="p">],</span>
+            <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importance_df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">primary_importance_type</span><span class="p">][:</span><span class="n">max_importance</span><span class="p">],</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">bar_label</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">containers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%.1f</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># labels on each bar</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">margins</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>  <span class="c1"># padding the y-margin so that the numbers fit in properly</span>
+
+        <span class="c1"># inverting to avoid ascending order</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
+
+        <span class="c1"># Hide the left, right and top spines</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[[</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="s2">&quot;top&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Adding the title</span>
+        <span class="c1"># plt.title(f&quot;Top {max_importance} Bits by XGBoost&#39;s {self.primary_importance_type.capitalize()} Feature Importance&quot;)</span>
+
+        <span class="c1"># Adding labels</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;f-score (feature importance by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">primary_importance_type</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+        <span class="c1"># check if save_fig is provided</span>
+        <span class="k">if</span> <span class="n">save_fig</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_fig</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="XGBFP.single_feature_importance_plot">
+<a class="viewcode-back" href="../../xfp.html#xfp.xfp_xgb.XGBFP.single_feature_importance_plot">[docs]</a>
+    <span class="k">def</span> <span class="nf">single_feature_importance_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_bit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">return_fig_path</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves a feature importance plot for a single bit.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        query_bit : int</span>
+<span class="sd">            Bit for which the feature importance plot is to be generated.</span>
+<span class="sd">        return_fig_path : bool, optional</span>
+<span class="sd">            Whether to return the path to the figure or not (default is True).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str or None</span>
+<span class="sd">            Path to the figure if `return_fig_path` is True, None otherwise.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the user hasn&#39;t run the `.make_feature_importance_df()` method first.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The plot is saved in the folder with the name:</span>
+<span class="sd">        Bit_{query_bit}_Feature_Importance_{self.primary_importance_type}_Plot.png</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># validate if self.importance_df exists</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">importance_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Please run the make_feature_importance_df() method first.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># making the feature importance plot of only the query bit</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span>
+            <span class="n">y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importance_df</span><span class="p">[</span><span class="s2">&quot;Bits&quot;</span><span class="p">][</span><span class="n">query_bit</span><span class="p">],</span>
+            <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importance_df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">primary_importance_type</span><span class="p">][</span><span class="n">query_bit</span><span class="p">],</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">bar_label</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">containers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%.1f</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># labels on each bar</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">margins</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>  <span class="c1"># padding the y-margin so that the numbers fit in properly</span>
+
+        <span class="c1"># hide the left, right and top spines</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[[</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="s2">&quot;top&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># adding the title</span>
+        <span class="c1"># plt.title(f&quot;Top {max_importance} Bits by XGBoost&#39;s {self.primary_importance_type.capitalize()} Feature Importance&quot;)</span>
+
+        <span class="c1"># adding labels</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;f-score (feature importance by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">primary_importance_type</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+        <span class="c1"># save the plot</span>
+        <span class="n">feature_importance_plot_path</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_name</span><span class="si">}</span><span class="s2">/Bit_</span><span class="si">{</span><span class="n">query_bit</span><span class="si">}</span><span class="s2">_Feature_Importance_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">primary_importance_type</span><span class="si">}</span><span class="s2">_Plot.png&quot;</span>
+        <span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">feature_importance_plot_path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">return_fig_path</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">feature_importance_plot_path</span></div>
+
+
+<div class="viewcode-block" id="XGBFP.generate_bit_analysis_report">
+<a class="viewcode-back" href="../../xfp.html#xfp.xfp_xgb.XGBFP.generate_bit_analysis_report">[docs]</a>
+    <span class="k">def</span> <span class="nf">generate_bit_analysis_report</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">bit_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">report_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">time_stamp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;X-FP_Bit_Analysis_Report&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a bit analysis PDF report for the query bits.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        bit_list : list[int]</span>
+<span class="sd">            List of bits for which the bit analysis report is to be generated.</span>
+<span class="sd">        report_title : str, optional</span>
+<span class="sd">            Title of the report (default is &quot;&quot;).</span>
+<span class="sd">        time_stamp : bool, optional</span>
+<span class="sd">            Whether to add a time stamp to the report or not (default is True).</span>
+<span class="sd">        file_name : str, optional</span>
+<span class="sd">            Name of the report file (default is &quot;X-FP_Bit_Analysis_Report&quot;).</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the user hasn&#39;t run the `.make_feature_importance_df()` method first.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># folder settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_folder_settings</span><span class="p">()</span>
+
+        <span class="c1"># validate if self.importance_df exists</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">importance_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Please run the make_feature_importance_df() method first.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># start the report</span>
+        <span class="n">bit_analysis_report</span> <span class="o">=</span> <span class="n">BitAnalysis</span><span class="p">()</span>
+
+        <span class="c1"># generate the overall feature importance plot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generate_feature_importance_plot</span><span class="p">(</span>
+            <span class="n">save_fig</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_name</span><span class="si">}</span><span class="s2">/Overall_Feature_Importance_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">primary_importance_type</span><span class="si">}</span><span class="s2">_Plot.png&quot;</span>
+        <span class="p">)</span>
+        <span class="n">overall_feature_importance_image</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_name</span><span class="si">}</span><span class="s2">/Overall_Feature_Importance_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">primary_importance_type</span><span class="si">}</span><span class="s2">_Plot.png&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># print the title page</span>
+        <span class="n">bit_analysis_report</span><span class="o">.</span><span class="n">intro_page</span><span class="p">(</span>
+            <span class="n">overall_feature_importance_image</span><span class="o">=</span><span class="n">overall_feature_importance_image</span><span class="p">,</span>
+            <span class="n">img_text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;XGBoost&#39;s </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">primary_importance_type</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2"> Feature Importance Plot for the Top 10 Morgan Fingerprint Bits&quot;</span><span class="p">,</span>
+            <span class="n">report_title</span><span class="o">=</span><span class="n">report_title</span><span class="p">,</span>
+            <span class="n">time_stamp</span><span class="o">=</span><span class="n">time_stamp</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># looping through the bits</span>
+        <span class="k">for</span> <span class="n">query_bit</span> <span class="ow">in</span> <span class="n">bit_list</span><span class="p">:</span>
+            <span class="c1"># generate the feature importance plot for the query bit, saving plot, and retrieving the path</span>
+            <span class="n">single_summary_plot_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_feature_importance_plot</span><span class="p">(</span><span class="n">query_bit</span><span class="o">=</span><span class="n">query_bit</span><span class="p">,</span> <span class="n">return_fig_path</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># Generating the count of substructures for the query bit, and retrieving the dataframe</span>
+            <span class="n">substructure_count_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">substruct_counter_per_bit</span><span class="p">(</span><span class="n">query_bit</span><span class="p">)</span>
+
+            <span class="c1"># Generating the substructure images for the query bit, and saving that image in the folder</span>
+            <span class="n">substructure_images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_substruct_images_per_bit</span><span class="p">(</span><span class="n">query_bit</span><span class="p">)</span>
+            <span class="n">substructure_images_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_name</span><span class="si">}</span><span class="s2">/Bit_</span><span class="si">{</span><span class="n">query_bit</span><span class="si">}</span><span class="s2">_Substructure_Images.svg&quot;</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">substructure_images_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">svg_file</span><span class="p">:</span>
+                <span class="n">svg_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">substructure_images</span><span class="p">)</span>
+
+            <span class="c1"># Generating the bit analysis report</span>
+            <span class="n">bit_analysis_report</span><span class="o">.</span><span class="n">print_chapter</span><span class="p">(</span>
+                <span class="n">in_bit</span><span class="o">=</span><span class="n">query_bit</span><span class="p">,</span>
+                <span class="n">mol_importance_image</span><span class="o">=</span><span class="n">single_summary_plot_path</span><span class="p">,</span>
+                <span class="n">mol_image</span><span class="o">=</span><span class="n">substructure_images_path</span><span class="p">,</span>
+                <span class="n">in_df</span><span class="o">=</span><span class="n">substructure_count_df</span><span class="p">,</span>
+                <span class="n">mol_importance_text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;XGBoost &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">primary_importance_type</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39; feature importance plot for the Bit </span><span class="si">{</span><span class="n">query_bit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">n_compounds</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_df</span><span class="p">),</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Add end note to the report</span>
+        <span class="n">path_to_xgb_feature_importance_note</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">files</span><span class="p">(</span><span class="n">resources</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;xgb_feature_importance.txt&quot;</span>
+        <span class="n">bit_analysis_report</span><span class="o">.</span><span class="n">add_end_note</span><span class="p">(</span><span class="n">feature_importance_note</span><span class="o">=</span><span class="n">path_to_xgb_feature_importance_note</span><span class="p">)</span>
+
+        <span class="c1"># Save the report</span>
+        <span class="n">bit_analysis_report</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">.pdf&quot;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/X-FP_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">X-FP 1.1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">xfp.xfp_xgb</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2022-2023, Marcel Baltruschat and Aishvarya Tandon.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

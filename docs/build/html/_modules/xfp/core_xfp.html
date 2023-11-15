@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>xfp.core_xfp &#8212; X-FP 1.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=601dbdee" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=50c6ec2c" />
+    <script src="../../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">X-FP 1.1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">xfp.core_xfp</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for xfp.core_xfp</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Pool</span><span class="p">,</span> <span class="n">cpu_count</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">Draw</span><span class="p">,</span> <span class="n">BondType</span><span class="p">,</span> <span class="n">AllChem</span> <span class="k">as</span> <span class="n">Chem</span><span class="p">,</span> <span class="n">rdFingerprintGenerator</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="n">BOND_DICT</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">BondType</span><span class="o">.</span><span class="n">SINGLE</span><span class="p">:</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span>
+    <span class="n">BondType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">:</span> <span class="s2">&quot;=&quot;</span><span class="p">,</span>
+    <span class="n">BondType</span><span class="o">.</span><span class="n">TRIPLE</span><span class="p">:</span> <span class="s2">&quot;#&quot;</span><span class="p">,</span>
+    <span class="n">BondType</span><span class="o">.</span><span class="n">AROMATIC</span><span class="p">:</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="FingerprintManager">
+<a class="viewcode-back" href="../../xfp.html#xfp.core_xfp.FingerprintManager">[docs]</a>
+<span class="k">class</span> <span class="nc">FingerprintManager</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fingerprint class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subs_per_on_bits</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spo_filtered</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frags</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bit_info_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fp_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_df</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mol_col</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fp_gen</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_features</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="FingerprintManager.fetch_fp_from_mol">
+<a class="viewcode-back" href="../../xfp.html#xfp.core_xfp.FingerprintManager.fetch_fp_from_mol">[docs]</a>
+    <span class="k">def</span> <span class="nf">fetch_fp_from_mol</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">in_mol</span><span class="p">:</span> <span class="n">Chem</span><span class="o">.</span><span class="n">Mol</span><span class="p">,</span>
+        <span class="n">radius</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">n_bits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2048</span><span class="p">,</span>
+        <span class="n">use_features</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">use_chirality</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate Morgan fingerprint from a RDKit molecule object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        in_mol : Chem.Mol</span>
+<span class="sd">            RDKit molecule object</span>
+<span class="sd">        radius : int, optional</span>
+<span class="sd">            Radius of the circular fingerprint (default is 2).</span>
+<span class="sd">        n_bits : int, optional</span>
+<span class="sd">            Number of bits in the fingerprint (default is 2048).</span>
+<span class="sd">        use_features : bool, optional</span>
+<span class="sd">            Use Feature Morgan fingerprint or not (default is False).</span>
+<span class="sd">        use_chirality : bool, optional</span>
+<span class="sd">            Use chirality or not (default is False).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple[np.ndarray, dict[str, list[int]]]</span>
+<span class="sd">            Returning a two-element tuple containing the fingerprint as a numpy array as the first element and</span>
+<span class="sd">            bit info as a dictionary as the second element.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fp_gen</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp_gen</span><span class="o">.</span><span class="n">GetOptions</span><span class="p">()</span><span class="o">.</span><span class="n">radius</span> <span class="o">!=</span> <span class="n">radius</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp_gen</span><span class="o">.</span><span class="n">GetOptions</span><span class="p">()</span><span class="o">.</span><span class="n">fpSize</span> <span class="o">!=</span> <span class="n">n_bits</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp_gen</span><span class="o">.</span><span class="n">GetOptions</span><span class="p">()</span><span class="o">.</span><span class="n">includeChirality</span> <span class="o">!=</span> <span class="n">use_chirality</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_features</span> <span class="o">!=</span> <span class="n">use_features</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_features</span> <span class="o">=</span> <span class="n">use_features</span>
+            <span class="n">atom_inv_gen</span> <span class="o">=</span> <span class="n">rdFingerprintGenerator</span><span class="o">.</span><span class="n">GetMorganFeatureAtomInvGen</span><span class="p">()</span> <span class="k">if</span> <span class="n">use_features</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fp_gen</span> <span class="o">=</span> <span class="n">rdFingerprintGenerator</span><span class="o">.</span><span class="n">GetMorganGenerator</span><span class="p">(</span>
+                <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span> <span class="n">fpSize</span><span class="o">=</span><span class="n">n_bits</span><span class="p">,</span> <span class="n">includeChirality</span><span class="o">=</span><span class="n">use_chirality</span><span class="p">,</span> <span class="n">atomInvariantsGenerator</span><span class="o">=</span><span class="n">atom_inv_gen</span>
+            <span class="p">)</span>
+        <span class="n">ao</span> <span class="o">=</span> <span class="n">rdFingerprintGenerator</span><span class="o">.</span><span class="n">AdditionalOutput</span><span class="p">()</span>
+        <span class="n">ao</span><span class="o">.</span><span class="n">AllocateBitInfoMap</span><span class="p">()</span>
+        <span class="n">morgan_fp_as_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp_gen</span><span class="o">.</span><span class="n">GetFingerprintAsNumPy</span><span class="p">(</span><span class="n">in_mol</span><span class="p">,</span> <span class="n">additionalOutput</span><span class="o">=</span><span class="n">ao</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">morgan_fp_as_array</span><span class="p">,</span> <span class="n">ao</span><span class="o">.</span><span class="n">GetBitInfoMap</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="FingerprintManager.fetch_fp_from_smiles">
+<a class="viewcode-back" href="../../xfp.html#xfp.core_xfp.FingerprintManager.fetch_fp_from_smiles">[docs]</a>
+    <span class="k">def</span> <span class="nf">fetch_fp_from_smiles</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">in_smiles</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">radius</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">n_bits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2048</span><span class="p">,</span>
+        <span class="n">use_features</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">use_chirality</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate Morgan fingerprint from a SMILES string.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        in_smiles : str</span>
+<span class="sd">            SMILES string</span>
+<span class="sd">        radius : int, optional</span>
+<span class="sd">            Radius of the circular fingerprint (default is 2).</span>
+<span class="sd">        n_bits : int, optional</span>
+<span class="sd">            Number of bits in the fingerprint (default is 2048).</span>
+<span class="sd">        use_features : bool, optional</span>
+<span class="sd">            Use Feature Morgan fingerprint or not (default is False).</span>
+<span class="sd">        use_chirality : bool, optional</span>
+<span class="sd">            Use chirality or not (default is False).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        morgan_fp_as_array : tuple[np.ndarray, dict[str, list[int]]]</span>
+<span class="sd">            Returning a two-element tuple containing the fingerprint as a numpy array as the first element and</span>
+<span class="sd">            bit info as a dictionary as the second element.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the SMILES string is invalid.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Catch errors based on invalid SMILES</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mol</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="n">Chem</span><span class="o">.</span><span class="n">CanonSmiles</span><span class="p">(</span><span class="n">in_smiles</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_fp_from_mol</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">n_bits</span><span class="p">,</span> <span class="n">use_features</span><span class="p">,</span> <span class="n">use_chirality</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid SMILES present: </span><span class="si">{</span><span class="n">in_smiles</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FingerprintManager.fetch_fp_from_df">
+<a class="viewcode-back" href="../../xfp.html#xfp.core_xfp.FingerprintManager.fetch_fp_from_df">[docs]</a>
+    <span class="k">def</span> <span class="nf">fetch_fp_from_df</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">input_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">smiles_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;SMILES&quot;</span><span class="p">,</span>
+        <span class="n">radius</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">n_bits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2048</span><span class="p">,</span>
+        <span class="n">use_features</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">use_chirality</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">mol_col</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">canonicalize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate either Morgan Fingerprints or Feature Morgan Fingerprints. Bit info is always included.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        input_df : pd.DataFrame</span>
+<span class="sd">            Pandas DataFrame containing SMILES strings.</span>
+<span class="sd">        smiles_col : str, optional</span>
+<span class="sd">            Name of the column containing SMILES strings (default is &quot;SMILES&quot;).</span>
+<span class="sd">        radius : int, optional</span>
+<span class="sd">            Radius of the circular fingerprint (default is 2).</span>
+<span class="sd">        n_bits : int, optional</span>
+<span class="sd">            Number of bits in the fingerprint (default is 2048).</span>
+<span class="sd">        use_features : bool, optional</span>
+<span class="sd">            Use Feature Morgan fingerprint or not (default is False).</span>
+<span class="sd">        use_chirality : bool, optional</span>
+<span class="sd">            Use chirality or not (default is False).</span>
+<span class="sd">        mol_col : str, optional</span>
+<span class="sd">            Name of the column containing RDKit molecules (default is None).</span>
+<span class="sd">        canonicalize : bool, optional</span>
+<span class="sd">            If True, molecules are canonicalized (default is True).</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If either of the SMILES or Molecules column is not present in the input DataFrame.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_df</span> <span class="o">=</span> <span class="n">input_df</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mol_col</span> <span class="o">=</span> <span class="n">mol_col</span>
+
+        <span class="c1"># Check whether the SMILES or mol column is present in the input DataFrame</span>
+        <span class="k">if</span> <span class="n">smiles_col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_df</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mol_col</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol_col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_df</span><span class="o">.</span><span class="n">columns</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Target column not found in the input DataFrame&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check whether the Molecules column is present in the input DataFrame, if no, then make it</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol_col</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mol_col</span> <span class="o">=</span> <span class="s2">&quot;Molecules&quot;</span>
+
+            <span class="c1"># generate canonical RDKit molecules in the input DataFrame. These molecules will be used many times.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mol_col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_df</span><span class="p">[</span><span class="n">smiles_col</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="n">Chem</span><span class="o">.</span><span class="n">CanonSmiles</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">canonicalize</span><span class="p">:</span>  <span class="c1"># molecules are present, will canonicalize them</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mol_col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mol_col</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="n">Chem</span><span class="o">.</span><span class="n">MolToSmiles</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Generate Morgan fingerprints and bit info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fp_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Morgan_FP_</span><span class="si">{</span><span class="n">radius</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">n_bits</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bit_info_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Bit_Info_</span><span class="si">{</span><span class="n">radius</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">n_bits</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fp_name</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bit_info_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">input_df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mol_col</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_fp_from_mol</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">n_bits</span><span class="p">,</span> <span class="n">use_features</span><span class="p">,</span> <span class="n">use_chirality</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Saving the fingerprints as an array</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fp_name</span><span class="p">])</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_gen_frag_for_single_bit</span><span class="p">(</span>
+        <span class="n">subs_per_on_bits</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Chem</span><span class="o">.</span><span class="n">Mol</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="n">include_connectivity_invariants</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Chem</span><span class="o">.</span><span class="n">Mol</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function generates all fragments for a single bit including canonical SMARTS patterns of each fragment.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        subs_per_on_bits : list[tuple[Chem.Mol, int, int]]</span>
+<span class="sd">            A list of tuples containing the molecule, atom index and radius each. The list contains all molecules for</span>
+<span class="sd">            which one particular bit is set.</span>
+<span class="sd">        include_connectivity_invariants : bool, optional</span>
+<span class="sd">            If True, connectivity invariants are included in the fragments (default is True).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple[list[str], list[tuple[Chem.Mol, int, int]]]</span>
+<span class="sd">            Returning a two-element tuple containing a list of unique canonical SMARTS patterns as first element and a</span>
+<span class="sd">            list of tuples containing a molecule, atom index and radius each as second element.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check if global &quot;ici&quot; variable is set, if so, use it for the invariant parameter</span>
+        <span class="k">if</span> <span class="s2">&quot;_ici&quot;</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
+            <span class="n">include_connectivity_invariants</span> <span class="o">=</span> <span class="n">_ici</span>
+
+        <span class="n">seen</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">spo_filtered</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">mol</span><span class="p">,</span> <span class="n">atom_index</span><span class="p">,</span> <span class="n">radius</span> <span class="ow">in</span> <span class="n">subs_per_on_bits</span><span class="p">:</span>
+            <span class="n">env</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">FindAtomEnvironmentOfRadiusN</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">atom_index</span><span class="p">,</span> <span class="n">useHs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">atoms</span> <span class="o">=</span> <span class="p">{</span><span class="n">atom_index</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">bidx</span> <span class="ow">in</span> <span class="n">env</span><span class="p">:</span>
+                <span class="n">atoms</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">GetBondWithIdx</span><span class="p">(</span><span class="n">bidx</span><span class="p">)</span><span class="o">.</span><span class="n">GetBeginAtomIdx</span><span class="p">())</span>
+                <span class="n">atoms</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">GetBondWithIdx</span><span class="p">(</span><span class="n">bidx</span><span class="p">)</span><span class="o">.</span><span class="n">GetEndAtomIdx</span><span class="p">())</span>
+
+            <span class="n">outer_atoms</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">include_connectivity_invariants</span><span class="p">:</span>
+                <span class="n">env</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">FindAtomEnvironmentOfRadiusN</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">radius</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">atom_index</span><span class="p">,</span> <span class="n">useHs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">atoms_rpp</span> <span class="o">=</span> <span class="p">{</span><span class="n">atom_index</span><span class="p">}</span>
+                <span class="k">for</span> <span class="n">bidx</span> <span class="ow">in</span> <span class="n">env</span><span class="p">:</span>
+                    <span class="n">atoms_rpp</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">GetBondWithIdx</span><span class="p">(</span><span class="n">bidx</span><span class="p">)</span><span class="o">.</span><span class="n">GetBeginAtomIdx</span><span class="p">())</span>
+                    <span class="n">atoms_rpp</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">GetBondWithIdx</span><span class="p">(</span><span class="n">bidx</span><span class="p">)</span><span class="o">.</span><span class="n">GetEndAtomIdx</span><span class="p">())</span>
+                <span class="n">outer_atoms</span> <span class="o">=</span> <span class="n">atoms_rpp</span> <span class="o">-</span> <span class="n">atoms</span>
+                <span class="n">atoms</span> <span class="o">=</span> <span class="n">atoms_rpp</span>
+
+            <span class="n">atom_symbols</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()</span> <span class="ow">in</span> <span class="n">outer_atoms</span><span class="p">:</span>
+                    <span class="n">atom_symbols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="n">atom_symbol</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFragmentToSmiles</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">atomsToUse</span><span class="o">=</span><span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()],</span> <span class="n">allHsExplicit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">atom_symbol</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">atom_symbol</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}{</span><span class="s1">&#39;;R&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">atom</span><span class="o">.</span><span class="n">IsInRing</span><span class="p">()</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">]&quot;</span>
+                <span class="n">atom_symbols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom_symbol</span><span class="p">)</span>
+
+            <span class="n">bond_symbols</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;~&quot;</span>
+                <span class="k">if</span> <span class="n">bond</span><span class="o">.</span><span class="n">GetBeginAtomIdx</span><span class="p">()</span> <span class="ow">in</span> <span class="n">outer_atoms</span> <span class="ow">or</span> <span class="n">bond</span><span class="o">.</span><span class="n">GetEndAtomIdx</span><span class="p">()</span> <span class="ow">in</span> <span class="n">outer_atoms</span>
+                <span class="k">else</span> <span class="n">BOND_DICT</span><span class="p">[</span><span class="n">bond</span><span class="o">.</span><span class="n">GetBondType</span><span class="p">()]</span>
+                <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetBonds</span><span class="p">()</span>
+            <span class="p">]</span>
+
+            <span class="n">smi</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFragmentToSmiles</span><span class="p">(</span>
+                <span class="n">mol</span><span class="p">,</span>
+                <span class="n">atomsToUse</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">atoms</span><span class="p">),</span>
+                <span class="n">bondsToUse</span><span class="o">=</span><span class="n">env</span><span class="p">,</span>
+                <span class="n">atomSymbols</span><span class="o">=</span><span class="n">atom_symbols</span><span class="p">,</span>
+                <span class="n">bondSymbols</span><span class="o">=</span><span class="n">bond_symbols</span><span class="p">,</span>
+                <span class="n">allBondsExplicit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">rootedAtAtom</span><span class="o">=</span><span class="n">atom_index</span><span class="p">,</span>
+                <span class="n">canonical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">smi</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                <span class="c1"># Check if substructure encoded by &quot;smi&quot; is already present in &quot;seen&quot; but with different atom order</span>
+                <span class="n">matches</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">known_smi</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                    <span class="n">matches</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">GetSubstructMatch</span><span class="p">(</span><span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmarts</span><span class="p">(</span><span class="n">known_smi</span><span class="p">)))))</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">GetSubstructMatch</span><span class="p">(</span><span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmarts</span><span class="p">(</span><span class="n">smi</span><span class="p">))))</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
+                    <span class="n">spo_filtered</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">mol</span><span class="p">,</span> <span class="n">atom_index</span><span class="p">,</span> <span class="n">radius</span><span class="p">))</span>
+                    <span class="n">seen</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">smi</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">seen</span><span class="p">,</span> <span class="n">spo_filtered</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_init_pool</span><span class="p">(</span><span class="n">ici</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper function to be able to use the Pool method imap() instead of starmap() because of better performance. It</span>
+<span class="sd">        takes a boolean specifying if connectivity invariants should be included or not and sets it to the global</span>
+<span class="sd">        variable `_ici`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ici : bool</span>
+<span class="sd">            Boolean specifying if connectivity invariants should be included or not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">global</span> <span class="n">_ici</span>
+        <span class="n">_ici</span> <span class="o">=</span> <span class="n">ici</span>
+
+<div class="viewcode-block" id="FingerprintManager.generate_frags">
+<a class="viewcode-back" href="../../xfp.html#xfp.core_xfp.FingerprintManager.generate_frags">[docs]</a>
+    <span class="k">def</span> <span class="nf">generate_frags</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">include_connectivity_invariants</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates fragments for all molecules and all nonzero bits in the dataset saved to this instance. The dataset</span>
+<span class="sd">        must be saved to this instance using the `fetch_fp_from_df()` method.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        verbose : bool, optional</span>
+<span class="sd">            If True, status messages are printed (default is True).</span>
+<span class="sd">        n_jobs : int, optional</span>
+<span class="sd">            Number of cores to use for parallelization (default is 1).</span>
+<span class="sd">        include_connectivity_invariants : bool, optional</span>
+<span class="sd">            If True, connectivity invariants are included in the fragments (default is True).</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If no input data is present, i.e. `fetch_fp_from_df()` was not called already.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check if there is input data</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input data is not present. Please use fetch_fp_from_df() method to add input data.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check n_jobs parameter</span>
+        <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">n_jobs</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">n_jobs</span> <span class="o">&gt;</span> <span class="n">cpu_count</span><span class="p">():</span>
+            <span class="n">n_jobs</span> <span class="o">=</span> <span class="n">cpu_count</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Generating fragments. This step may take a while.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Gather information for all the bit sets over the entire dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subs_per_on_bits</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()):</span>
+            <span class="n">single_mol</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mol_col</span><span class="p">]</span>
+            <span class="n">single_mol_bit_info</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Bit_Info_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fp_gen</span><span class="o">.</span><span class="n">GetOptions</span><span class="p">()</span><span class="o">.</span><span class="n">radius</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fp_gen</span><span class="o">.</span><span class="n">GetOptions</span><span class="p">()</span><span class="o">.</span><span class="n">fpSize</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="n">single_mol_bit_info</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">atom_index</span><span class="p">,</span> <span class="n">radius</span> <span class="ow">in</span> <span class="n">single_mol_bit_info</span><span class="p">[</span><span class="n">bit</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">subs_per_on_bits</span><span class="p">[</span><span class="n">bit</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">single_mol</span><span class="p">,</span> <span class="n">atom_index</span><span class="p">,</span> <span class="n">radius</span><span class="p">))</span>
+
+        <span class="c1"># Print the bits which are set</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subs_per_on_bits</span><span class="p">)</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fp_gen</span><span class="o">.</span><span class="n">GetOptions</span><span class="p">()</span><span class="o">.</span><span class="n">fpSize</span><span class="si">}</span><span class="s2"> bits are set in the dataset.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Filtering duplicates per bit and extract fragment SMARTS</span>
+        <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spo_filtered</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frags</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subs_per_on_bits</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">frags</span><span class="p">[</span><span class="n">bit</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">spo_filtered</span><span class="p">[</span><span class="n">bit</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_frag_for_single_bit</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">subs_per_on_bits</span><span class="p">[</span><span class="n">bit</span><span class="p">],</span> <span class="n">include_connectivity_invariants</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parallelize using </span><span class="si">{</span><span class="n">n_jobs</span><span class="si">}</span><span class="s2"> cores.&quot;</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">Pool</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_pool</span><span class="p">,</span> <span class="n">initargs</span><span class="o">=</span><span class="p">(</span><span class="n">include_connectivity_invariants</span><span class="p">,))</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+                <span class="n">frags</span><span class="p">,</span> <span class="n">spo_filtered</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">p</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gen_frag_for_single_bit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subs_per_on_bits</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">frags</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subs_per_on_bits</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">frags</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spo_filtered</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subs_per_on_bits</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">spo_filtered</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="FingerprintManager.make_substruct_per_bit_plot">
+<a class="viewcode-back" href="../../xfp.html#xfp.core_xfp.FingerprintManager.make_substruct_per_bit_plot">[docs]</a>
+    <span class="k">def</span> <span class="nf">make_substruct_per_bit_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dpi</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">save_fig</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">fig_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate substructures per bit plot. This plot is useful to understand the distribution of substructures encoded</span>
+<span class="sd">        in each bit.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dpi : int, optional</span>
+<span class="sd">            Dots per inch (default is 100).</span>
+<span class="sd">        save_fig : bool, optional</span>
+<span class="sd">            If True, the figure is saved (default is False).</span>
+<span class="sd">        fig_name : str, optional</span>
+<span class="sd">            Name of the plot (default is None).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check for frags and spo_filtered</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">frags</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">spo_filtered</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: Fragments were not generated, yet. Try to generate now with default settings...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generate_frags</span><span class="p">()</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">)</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frags</span><span class="p">[</span><span class="n">bit</span><span class="p">])</span> <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">frags</span><span class="p">])</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Substructures per bit&quot;</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;F&quot;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">use_features</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;E&quot;</span><span class="si">}</span><span class="s1">CFP</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fp_gen</span><span class="o">.</span><span class="n">GetOptions</span><span class="p">()</span><span class="o">.</span><span class="n">radius</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="si">}</span><span class="s1"> &#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fp_gen</span><span class="o">.</span><span class="n">GetOptions</span><span class="p">()</span><span class="o">.</span><span class="n">fpSize</span><span class="si">}</span><span class="s2"> bits&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">save_fig</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">fig_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">fig_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Substructures_per_bit_plot.png&quot;</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_name</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="FingerprintManager.substruct_counter_per_bit">
+<a class="viewcode-back" href="../../xfp.html#xfp.core_xfp.FingerprintManager.substruct_counter_per_bit">[docs]</a>
+    <span class="k">def</span> <span class="nf">substruct_counter_per_bit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_bit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Counts the frequency of the substructures present in a query bit. Total occurrences will calculate all the</span>
+<span class="sd">        occurrences of a substructure in the dataset, including multiple occurrences in a molecule. Unique occurrences</span>
+<span class="sd">        will calculate the number of molecules in which a substructure is present.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        query_bit : int</span>
+<span class="sd">            Bit for which the substructure frequency is to be calculated.</span>
+<span class="sd">        verbose : bool, optional</span>
+<span class="sd">            If True, status messages are printed (default is False).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            Pandas DataFrame where substructures (as SMARTS) are present with their total and unique occurrences.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check for frags and spo_filtered</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">frags</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">spo_filtered</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: Fragments were not generated, yet. Try to generate now with default settings...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generate_frags</span><span class="p">()</span>
+
+        <span class="c1"># Initialize an empty list to store unique occurrences.</span>
+        <span class="n">substruct_unique_occurrences</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Initialize an empty list to store total occurrences.</span>
+        <span class="n">substruct_total_occurrences</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Print wait-time warning</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Counting substructure frequencies of the query bit: Bit </span><span class="si">{</span><span class="n">query_bit</span><span class="si">}</span><span class="s2">. This step may take a while.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Run a loop of all the substructures over the data to prepare their count</span>
+        <span class="k">for</span> <span class="n">substructure</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">frags</span><span class="p">[</span><span class="n">query_bit</span><span class="p">]:</span>
+            <span class="n">frequency_substructure_per_mol</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">frequency_substructure_per_mol_unique</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">substructure_as_mol</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmarts</span><span class="p">(</span><span class="n">substructure</span><span class="p">)</span>
+
+            <span class="c1"># Loop over molecules in the dataset</span>
+            <span class="k">for</span> <span class="n">single_mol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mol_col</span><span class="p">]:</span>
+                <span class="n">matches</span> <span class="o">=</span> <span class="n">single_mol</span><span class="o">.</span><span class="n">GetSubstructMatches</span><span class="p">(</span><span class="n">substructure_as_mol</span><span class="p">)</span>
+                <span class="n">frequency_substructure_per_mol</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span>
+
+                <span class="c1"># To calculate unique occurrences</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">frequency_substructure_per_mol_unique</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">substruct_total_occurrences</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">frequency_substructure_per_mol</span><span class="p">)</span>
+            <span class="n">substruct_unique_occurrences</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">frequency_substructure_per_mol_unique</span><span class="p">)</span>
+
+        <span class="c1"># Creating the substructure dataframe</span>
+        <span class="n">substruct_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;Serial&quot;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frags</span><span class="p">[</span><span class="n">query_bit</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="s2">&quot;Substructures (as SMARTS)&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">frags</span><span class="p">[</span><span class="n">query_bit</span><span class="p">],</span>
+                <span class="s2">&quot;Total occurrences&quot;</span><span class="p">:</span> <span class="n">substruct_total_occurrences</span><span class="p">,</span>
+                <span class="s2">&quot;Unique occurrences&quot;</span><span class="p">:</span> <span class="n">substruct_unique_occurrences</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">substruct_df</span></div>
+
+
+<div class="viewcode-block" id="FingerprintManager.get_substruct_images_per_bit">
+<a class="viewcode-back" href="../../xfp.html#xfp.core_xfp.FingerprintManager.get_substruct_images_per_bit">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_substruct_images_per_bit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_bit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">smarts_as_legends</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates an SVG image of substructures present in a query bit.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        query_bit : int</span>
+<span class="sd">            Bit for which the substructure images are to be generated.</span>
+<span class="sd">        smarts_as_legends : bool, optional</span>
+<span class="sd">            If True, substructure SMARTS are used as legends (default is False).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            SVG image as a string of substructures present in a query bit. This image should be saved separately.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check for frags and spo_filtered</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">frags</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">spo_filtered</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: Fragments were not generated, yet. Try to generate now with default settings...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generate_frags</span><span class="p">()</span>
+
+        <span class="c1"># Fix Draw Option issue:</span>
+        <span class="n">draw_options</span> <span class="o">=</span> <span class="n">Draw</span><span class="o">.</span><span class="n">rdMolDraw2D</span><span class="o">.</span><span class="n">MolDrawOptions</span><span class="p">()</span>
+        <span class="n">draw_options</span><span class="o">.</span><span class="n">prepareMolsBeforeDrawing</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># legends</span>
+        <span class="k">if</span> <span class="n">smarts_as_legends</span><span class="p">:</span>
+            <span class="n">legends</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frags</span><span class="p">[</span><span class="n">query_bit</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">legends</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frags</span><span class="p">[</span><span class="n">query_bit</span><span class="p">]))]</span>
+
+        <span class="c1"># Get substructure images</span>
+        <span class="n">substruct_images</span> <span class="o">=</span> <span class="n">Draw</span><span class="o">.</span><span class="n">DrawMorganEnvs</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spo_filtered</span><span class="p">[</span><span class="n">query_bit</span><span class="p">],</span>
+            <span class="n">legends</span><span class="o">=</span><span class="n">legends</span><span class="p">,</span>
+            <span class="n">subImgSize</span><span class="o">=</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">),</span>
+            <span class="n">molsPerRow</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+            <span class="n">drawOptions</span><span class="o">=</span><span class="n">draw_options</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">substruct_images</span></div>
+</div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/X-FP_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">X-FP 1.1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">xfp.core_xfp</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2022-2023, Marcel Baltruschat and Aishvarya Tandon.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>xfp.report_maker &#8212; X-FP 1.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=601dbdee" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=50c6ec2c" />
+    <script src="../../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">X-FP 1.1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">xfp.report_maker</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for xfp.report_maker</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">importlib.resources</span> <span class="k">as</span> <span class="nn">pkg_resources</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">fpdf</span> <span class="kn">import</span> <span class="n">FPDF</span><span class="p">,</span> <span class="n">Align</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">resources</span>
+
+
+<div class="viewcode-block" id="BitAnalysis">
+<a class="viewcode-back" href="../../xfp.html#xfp.report_maker.BitAnalysis">[docs]</a>
+<span class="k">class</span> <span class="nc">BitAnalysis</span><span class="p">(</span><span class="n">FPDF</span><span class="p">):</span>
+<div class="viewcode-block" id="BitAnalysis.header">
+<a class="viewcode-back" href="../../xfp.html#xfp.report_maker.BitAnalysis.header">[docs]</a>
+    <span class="k">def</span> <span class="nf">header</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate header of the report.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># For the cover page, add the X-FP logo and the CzodrowskiLab logo</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_no</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># X-FP Logo</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">(</span>
+                <span class="n">pkg_resources</span><span class="o">.</span><span class="n">files</span><span class="p">(</span><span class="n">resources</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;X-FP_logo.png&quot;</span><span class="p">,</span>
+                <span class="n">w</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">Align</span><span class="o">.</span><span class="n">L</span><span class="p">,</span>
+                <span class="n">y</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="c1"># CzodrowskiLab Logo</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">(</span>
+                <span class="n">pkg_resources</span><span class="o">.</span><span class="n">files</span><span class="p">(</span><span class="n">resources</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;CzodrowskiLab_Logo.png&quot;</span><span class="p">,</span>
+                <span class="n">w</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">Align</span><span class="o">.</span><span class="n">R</span><span class="p">,</span>
+                <span class="n">y</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;X-FP&quot;</span>
+
+            <span class="c1"># Setting header&#39;s font:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="s2">&quot;helvetica&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+
+            <span class="c1"># Calculating width of title</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_string_width</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span> <span class="o">+</span> <span class="mi">6</span>
+
+            <span class="c1"># Setting cursor position:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_x</span><span class="p">((</span><span class="mi">210</span> <span class="o">-</span> <span class="n">width</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+            <span class="c1"># Setting thickness of the frame (1 mm)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_line_width</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># Printing title:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span>
+                <span class="n">width</span><span class="p">,</span>
+                <span class="mi">9</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
+                <span class="n">new_x</span><span class="o">=</span><span class="s2">&quot;LMARGIN&quot;</span><span class="p">,</span>
+                <span class="n">new_y</span><span class="o">=</span><span class="s2">&quot;NEXT&quot;</span><span class="p">,</span>
+                <span class="n">align</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+                <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">ln</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+            <span class="c1"># printing subtitle</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="s2">&quot;helvetica&quot;</span><span class="p">,</span> <span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_x</span><span class="p">((</span><span class="mi">210</span> <span class="o">-</span> <span class="n">width</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span>
+                <span class="n">width</span><span class="p">,</span>
+                <span class="n">h</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                <span class="n">txt</span><span class="o">=</span><span class="s2">&quot;Bit Analysis&quot;</span><span class="p">,</span>
+                <span class="n">new_x</span><span class="o">=</span><span class="s2">&quot;LMARGIN&quot;</span><span class="p">,</span>
+                <span class="n">new_y</span><span class="o">=</span><span class="s2">&quot;NEXT&quot;</span><span class="p">,</span>
+                <span class="n">align</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+                <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Performing a line break:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ln</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BitAnalysis.footer">
+<a class="viewcode-back" href="../../xfp.html#xfp.report_maker.BitAnalysis.footer">[docs]</a>
+    <span class="k">def</span> <span class="nf">footer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate footer of the report.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Setting position at 1.5 cm from bottom:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_y</span><span class="p">(</span><span class="o">-</span><span class="mi">15</span><span class="p">)</span>
+        <span class="c1"># Setting font: helvetica italic 8</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="s2">&quot;helvetica&quot;</span><span class="p">,</span> <span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+        <span class="c1"># Setting text color to gray:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_text_color</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span>
+        <span class="c1"># Adding the user provided report title on the left side of the footer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_title</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Setting position at 1.5 cm from bottom:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_y</span><span class="p">(</span><span class="o">-</span><span class="mi">15</span><span class="p">)</span>
+        <span class="c1"># Setting font: helvetica italic 8</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="s2">&quot;helvetica&quot;</span><span class="p">,</span> <span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+        <span class="c1"># Setting text color to gray:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_text_color</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span>
+        <span class="c1"># Printing page number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Page </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">page_no</span><span class="p">()</span><span class="si">}</span><span class="s2"> of </span><span class="se">{{</span><span class="s2">nb</span><span class="se">}}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+
+        <span class="c1"># time stamp</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_stamp</span><span class="p">:</span>
+            <span class="c1"># Setting position at 1.5 cm from bottom:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_y</span><span class="p">(</span><span class="o">-</span><span class="mi">15</span><span class="p">)</span>
+            <span class="c1"># Setting font: helvetica italic 8</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="s2">&quot;helvetica&quot;</span><span class="p">,</span> <span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+            <span class="c1"># Setting text color to gray:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_text_color</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span>
+            <span class="c1"># Printing time stamp</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Report generated on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">time_stamp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;R&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BitAnalysis.intro_page">
+<a class="viewcode-back" href="../../xfp.html#xfp.report_maker.BitAnalysis.intro_page">[docs]</a>
+    <span class="k">def</span> <span class="nf">intro_page</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">overall_feature_importance_image</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">img_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">report_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">time_stamp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate an introduction page of the report where the overall feature importance plot is displayed.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        overall_feature_importance_image : str</span>
+<span class="sd">            Image of the overall feature importance plot.</span>
+<span class="sd">        img_text : str</span>
+<span class="sd">            Text to be displayed above the overall feature importance image.</span>
+<span class="sd">        report_title : str, optional</span>
+<span class="sd">            Title of the report provided by the user (default is &quot;&quot;).</span>
+<span class="sd">        time_stamp : bool, optional</span>
+<span class="sd">            Add time stamp to the report footer or not (default is True). The time is local and is formatted as</span>
+<span class="sd">            &#39;%Y-%m-%d %H:%M:%S&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Truncate the title length to 50 characters</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">report_title</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">:</span>
+            <span class="n">report_title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">report_title</span><span class="p">[:</span><span class="mi">50</span><span class="p">]</span><span class="si">}</span><span class="s2">...&quot;</span>
+
+        <span class="c1"># Creating a class variable to store the report title</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_title</span> <span class="o">=</span> <span class="n">report_title</span>
+
+        <span class="c1"># Creating a class variable to store the time stamp</span>
+        <span class="k">if</span> <span class="n">time_stamp</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_stamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_stamp</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Add page</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_page</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_y</span><span class="p">(</span><span class="mi">70</span><span class="p">)</span>  <span class="c1"># in case report title is missing</span>
+
+        <span class="c1"># writing the title of the report if provided</span>
+        <span class="k">if</span> <span class="n">report_title</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="s2">&quot;helvetica&quot;</span><span class="p">,</span> <span class="s2">&quot;U&quot;</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_y</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">multi_cell</span><span class="p">(</span><span class="n">w</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">txt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">report_title</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ln</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">(</span>
+            <span class="n">overall_feature_importance_image</span><span class="p">,</span>
+            <span class="n">w</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">Align</span><span class="o">.</span><span class="n">C</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ln</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="c1"># adding the title of the plot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="s2">&quot;helvetica&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multi_cell</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">img_text</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ln</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BitAnalysis.chapter_title">
+<a class="viewcode-back" href="../../xfp.html#xfp.report_maker.BitAnalysis.chapter_title">[docs]</a>
+    <span class="k">def</span> <span class="nf">chapter_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_bit</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate chapter title of the report.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        in_bit : int</span>
+<span class="sd">            Bit of choice for which the analysis is to be performed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Setting font: helvetica 12</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="s2">&quot;helvetica&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+        <span class="c1"># Setting background color</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_fill_color</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">220</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+        <span class="c1"># Printing chapter name:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span>
+            <span class="mi">0</span><span class="p">,</span>
+            <span class="mi">6</span><span class="p">,</span>
+            <span class="c1"># f&quot;Chapter {num} : {label}&quot;,</span>
+            <span class="sa">f</span><span class="s2">&quot;Bit </span><span class="si">{</span><span class="n">in_bit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">new_x</span><span class="o">=</span><span class="s2">&quot;LMARGIN&quot;</span><span class="p">,</span>
+            <span class="n">new_y</span><span class="o">=</span><span class="s2">&quot;NEXT&quot;</span><span class="p">,</span>
+            <span class="n">align</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">,</span>
+            <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Performing a line break:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ln</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BitAnalysis.print_chapter">
+<a class="viewcode-back" href="../../xfp.html#xfp.report_maker.BitAnalysis.print_chapter">[docs]</a>
+    <span class="k">def</span> <span class="nf">print_chapter</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">in_bit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">mol_importance_image</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">mol_image</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">in_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">mol_importance_text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">n_compounds</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate chapter of the report.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        in_bit : int</span>
+<span class="sd">            Bit of choice for which the analysis is to be performed.</span>
+<span class="sd">        mol_importance_image : str</span>
+<span class="sd">            Image of the feature importance plot for the query bit.</span>
+<span class="sd">        mol_image : str</span>
+<span class="sd">            Image of the substructure plot for the query bit.</span>
+<span class="sd">        in_df : pd.DataFrame</span>
+<span class="sd">            Pandas DataFrame containing the substructure frequency table for the query bit.</span>
+<span class="sd">        mol_importance_text : str, optional</span>
+<span class="sd">            Text to be displayed above the feature importance image (default is None).</span>
+<span class="sd">        n_compounds : int, optional</span>
+<span class="sd">            Total number of compounds in the input dataframe (default is None).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Setting font: helvetica 8</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="s2">&quot;helvetica&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_page</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chapter_title</span><span class="p">(</span><span class="n">in_bit</span><span class="p">)</span>
+
+        <span class="c1"># Feature importance image, e.g., SHAP Plot</span>
+
+        <span class="k">if</span> <span class="n">mol_importance_text</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mol_importance_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SHAP Summary Plot for the Bit </span><span class="si">{</span><span class="n">in_bit</span><span class="si">}</span><span class="s2">:&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">multi_cell</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">mol_importance_text</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ln</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">mol_importance_image</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ln</span><span class="p">()</span>
+
+        <span class="c1"># Substructure images</span>
+        <span class="n">sub_struct_heading_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Substructures present:&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multi_cell</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">sub_struct_heading_text</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ln</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">mol_image</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ln</span><span class="p">()</span>
+
+        <span class="c1"># Substructure table</span>
+
+        <span class="k">if</span> <span class="n">n_compounds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sub_struct_table_text</span> <span class="o">=</span> <span class="s2">&quot;Substructures frequency table:&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sub_struct_table_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Substructures frequency table (total compounds: </span><span class="si">{</span><span class="n">n_compounds</span><span class="si">}</span><span class="s2">):&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multi_cell</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">sub_struct_table_text</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ln</span><span class="p">()</span>
+
+        <span class="n">in_df</span> <span class="o">=</span> <span class="n">in_df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">in_df</span> <span class="o">=</span> <span class="n">in_df</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>  <span class="c1"># Convert all data inside dataframe into string type</span>
+
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">in_df</span><span class="p">)]</span>  <span class="c1"># Get list of dataframe columns</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">in_df</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>  <span class="c1"># Get list of dataframe rows</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">columns</span> <span class="o">+</span> <span class="n">rows</span>  <span class="c1"># Combine columns and rows in one list</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="s2">&quot;helvetica&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="p">(</span>
+            <span class="n">borders_layout</span><span class="o">=</span><span class="s2">&quot;HORIZONTAL_LINES&quot;</span><span class="p">,</span>
+            <span class="c1"># cell_fill_color=200,  # grey</span>
+            <span class="n">cell_fill_mode</span><span class="o">=</span><span class="s2">&quot;ROWS&quot;</span><span class="p">,</span>
+            <span class="n">line_height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">font_size</span> <span class="o">*</span> <span class="mf">2.5</span><span class="p">,</span>
+            <span class="n">text_align</span><span class="o">=</span><span class="s2">&quot;CENTER&quot;</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="mi">180</span><span class="p">,</span>
+            <span class="n">col_widths</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">table</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">data_row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">row</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">row</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">datum</span> <span class="ow">in</span> <span class="n">data_row</span><span class="p">:</span>
+                    <span class="n">row</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ln</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="BitAnalysis.add_end_note">
+<a class="viewcode-back" href="../../xfp.html#xfp.report_maker.BitAnalysis.add_end_note">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_end_note</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_importance_note</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate end note of the report.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        feature_importance_note : str, optional</span>
+<span class="sd">            Path to the text file containing the information about feature importance (default is None).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Add page</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_page</span><span class="p">()</span>
+
+        <span class="c1"># setting font of title</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="s2">&quot;helvetica&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span>
+            <span class="mi">0</span><span class="p">,</span>
+            <span class="mi">6</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;Notes about substructures rendering: &quot;</span><span class="p">,</span>
+            <span class="n">new_x</span><span class="o">=</span><span class="s2">&quot;LMARGIN&quot;</span><span class="p">,</span>
+            <span class="n">new_y</span><span class="o">=</span><span class="s2">&quot;NEXT&quot;</span><span class="p">,</span>
+            <span class="n">align</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">,</span>
+            <span class="c1"># fill=True,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># setting font of text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="s2">&quot;helvetica&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+
+        <span class="c1"># Reading text file of substructure rendering:</span>
+        <span class="n">substructure_rendering_file</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">files</span><span class="p">(</span><span class="n">resources</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;rendering_info.txt&quot;</span>
+        <span class="k">with</span> <span class="n">substructure_rendering_file</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+            <span class="n">substructure_rendering_text</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>  <span class="c1"># .decode(&quot;latin-1&quot;)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">multi_cell</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">substructure_rendering_text</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ln</span><span class="p">()</span>
+
+        <span class="c1"># Adding note about feature importance</span>
+        <span class="k">if</span> <span class="n">feature_importance_note</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="s2">&quot;helvetica&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">6</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;Notes about feature importance: &quot;</span><span class="p">,</span>
+                <span class="n">new_x</span><span class="o">=</span><span class="s2">&quot;LMARGIN&quot;</span><span class="p">,</span>
+                <span class="n">new_y</span><span class="o">=</span><span class="s2">&quot;NEXT&quot;</span><span class="p">,</span>
+                <span class="n">align</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">,</span>
+                <span class="c1"># fill=True,</span>
+            <span class="p">)</span>
+
+            <span class="c1"># setting font of text</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="s2">&quot;helvetica&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+
+            <span class="c1"># Reading text file of feature importance:</span>
+            <span class="k">if</span> <span class="n">feature_importance_note</span> <span class="o">==</span> <span class="s2">&quot;shap_tree_explainer&quot;</span><span class="p">:</span>
+                <span class="n">feature_importance_file</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">files</span><span class="p">(</span><span class="n">resources</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;shap_tree_explainer_info.txt&quot;</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">feature_importance_file</span> <span class="o">=</span> <span class="n">feature_importance_note</span>
+
+            <span class="k">with</span> <span class="n">feature_importance_file</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+                <span class="n">feature_importance_text</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">multi_cell</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">feature_importance_text</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ln</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/X-FP_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">X-FP 1.1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">xfp.report_maker</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2022-2023, Marcel Baltruschat and Aishvarya Tandon.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

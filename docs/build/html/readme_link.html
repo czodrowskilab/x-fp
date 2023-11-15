@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>X-FP - eXplainable FingerPrints &#8212; X-FP 1.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css?v=601dbdee" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=50c6ec2c" />
+    <script src="_static/documentation_options.js?v=fc837d61"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="xfp package API" href="xfp.html" />
+    <link rel="prev" title="Welcome to X-FP’s documentation!" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="xfp.html" title="xfp package API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to X-FP’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">X-FP 1.1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">X-FP - eXplainable FingerPrints</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="x-fp-explainable-fingerprints">
+<h1>X-FP - eXplainable FingerPrints<a class="headerlink" href="#x-fp-explainable-fingerprints" title="Link to this heading">¶</a></h1>
+<p><img alt="x-fp logo" src="https://github.com/czodrowskilab/x-fp/blob/main/src/xfp/resources/X-FP_logo.png" /></p>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading">¶</a></h2>
+<p>X-FP (eXplainable FingerPrints) is a software package which explains the model outputs for the QSAR models trained exclusively on Morgan Fingerprints. It is model-agnostic.</p>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
+<p>The tool can be installed using either <code class="docutils literal notranslate"><span class="pre">mamba</span></code> (recommended) or <code class="docutils literal notranslate"><span class="pre">pip</span></code>-only. First of all clone the repository and
+switch to the cloned directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/czodrowskilab/x-fp
+<span class="nb">cd</span><span class="w"> </span>x-fp
+</pre></div>
+</div>
+<section id="using-mamba">
+<h3>Using Mamba<a class="headerlink" href="#using-mamba" title="Link to this heading">¶</a></h3>
+<p>A conda-based installation, e.g. Anaconda, Miniconda, Miniforge or Mambaforge, must be available on your system and
+<code class="docutils literal notranslate"><span class="pre">mamba</span></code> must be installed in the base environment. If no existing conda installation is available, visit
+<a class="reference external" href="https://github.com/conda-forge/miniforge#mambaforge">Mambaforge</a> for more information.</p>
+<p>To create the conda environment, activate it and install X-FP into the environment, run the following commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mamba<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environment_generic_minimal.yml
+mamba<span class="w"> </span>activate<span class="w"> </span>xfp-env
+pip<span class="w"> </span>install<span class="w"> </span>.
+</pre></div>
+</div>
+<p>There are also environment files for specific operating systems available, e.g. <a class="reference external" href="https://github.com/czodrowskilab/x-fp/blob/documentation/environment_linux64.yml">environment_linux64.yml</a> for Linux
+and <a class="reference external" href="https://github.com/czodrowskilab/x-fp/blob/documentation/environment_osx.yml">environment_osx.yml</a> for macOS. These files contain a fixed package set that was used for developing and testing.</p>
+</section>
+<section id="using-only-pip">
+<h3>Using only Pip<a class="headerlink" href="#using-only-pip" title="Link to this heading">¶</a></h3>
+<p>To install the tool using only <code class="docutils literal notranslate"><span class="pre">pip</span></code>, it is recommended to create a virtual environment first. For this you have to use
+a system Python interpreter of version 3.10 or higher. You can check this by calling <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-V</span></code>. Run the following
+commands to create a virtual environment, activate it and install X-FP into the environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>xfp-env
+<span class="nb">source</span><span class="w"> </span>xfp-env/bin/activate
+pip3<span class="w"> </span>install<span class="w"> </span>rdkit<span class="w"> </span>.
+</pre></div>
+</div>
+<p>If there is an error during the first command, you probably have to install the <code class="docutils literal notranslate"><span class="pre">venv</span></code> module first. This can be done
+for example by running <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt</span> <span class="pre">install</span> <span class="pre">python3-venv</span></code> on Debian/Ubuntu. You can also skip the first two commands and
+just call <code class="docutils literal notranslate"><span class="pre">pip3</span> <span class="pre">install</span> <span class="pre">rdkit</span> <span class="pre">.</span></code> directly, but this will install the tool and all dependencies into your system Python
+environment which is not recommended.</p>
+</section>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
+<p>X-FP is fairly straight-forward to use.</p>
+<section id="test-data-and-model">
+<h3>Test Data and Model<a class="headerlink" href="#test-data-and-model" title="Link to this heading">¶</a></h3>
+<p>hERG bioactivity data was accessed from CHEMBL 27. A <a class="reference external" href="https://github.com/czodrowskilab/x-fp/blob/main/test_data/herg_model-xgb.json">XGBoost binary classification model</a> was trained on 6078 compounds.
+<a class="reference external" href="https://github.com/czodrowskilab/x-fp/blob/main/test_data/df_test_herg.tsv">Test data</a> comprising of 1216 compounds is included.</p>
+<p>Note that you should install <code class="docutils literal notranslate"><span class="pre">xgboost</span></code> to run the examples below.</p>
+</section>
+<section id="shap-treeexplainer">
+<h3>SHAP TreeExplainer<a class="headerlink" href="#shap-treeexplainer" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import X-FP for TreeExplainer</span>
+<span class="kn">from</span> <span class="nn">xfp.xfp_tree_explainer</span> <span class="kn">import</span> <span class="n">XFPTreeExplainer</span>
+
+<span class="c1"># Read the FP2 XGBoost classification model</span>
+<span class="n">model_fp2</span> <span class="o">=</span> <span class="n">XGBClassifier</span><span class="p">()</span>
+<span class="n">fp2_model_path</span> <span class="o">=</span> <span class="s2">&quot;example_data/herg_model-xgb.json&quot;</span>
+
+<span class="n">model_fp2</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="n">fp2_model_path</span><span class="p">)</span>
+
+<span class="c1"># Make a SHAP TreeExplainer object</span>
+<span class="n">shap_explainer</span> <span class="o">=</span> <span class="n">shap</span><span class="o">.</span><span class="n">TreeExplainer</span><span class="p">(</span><span class="n">model_fp2</span><span class="p">)</span>
+
+<span class="c1"># Make a X-FP tree explainer object</span>
+<span class="n">xfp</span> <span class="o">=</span> <span class="n">XFPTreeExplainer</span><span class="p">(</span><span class="n">shap_explainer</span><span class="p">)</span>
+
+<span class="c1"># Load the data (here, the test set - in case you want to visualize the important bits and the chemical substructures they encode in the test set)</span>
+<span class="n">df_test</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;example_data/df_test_herg.tsv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="c1"># Generate the fingerprints of the radius and number of bits on which the model was trained</span>
+<span class="n">xfp</span><span class="o">.</span><span class="n">fetch_fp_from_df</span><span class="p">(</span><span class="n">df_test</span><span class="p">,</span> <span class="n">smiles_col</span> <span class="o">=</span> <span class="s2">&quot;Smiles&quot;</span><span class="p">,</span> <span class="n">n_bits</span><span class="o">=</span> <span class="mi">4096</span><span class="p">,</span> <span class="n">use_chirality</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># The dataframe (now with extra columns for the RDKit molecule object and the Morgan fingerprints) can be checked by calling:</span>
+<span class="n">xfp</span><span class="o">.</span><span class="n">input_df</span>
+
+<span class="c1"># This dataframe is a normal Pandas dataframe and can be used as such</span>
+<span class="n">xfp</span><span class="o">.</span><span class="n">input_df</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+<span class="n">xfp</span><span class="o">.</span><span class="n">input_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+
+<span class="c1"># Generate the fragments. This is usually the time-consuming step, and can depend on the size of the dataset and parallelization.</span>
+<span class="n">xfp</span><span class="o">.</span><span class="n">generate_frags</span><span class="p">(</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># To visualize the number of substructures encoded per bit across the dataset, a box plot can be generated:</span>
+<span class="n">xfp</span><span class="o">.</span><span class="n">make_substruct_per_bit_plot</span><span class="p">()</span>
+
+<span class="c1"># The SHAP values should be generated first</span>
+<span class="n">xfp</span><span class="o">.</span><span class="n">generate_shap_values</span><span class="p">()</span>
+
+<span class="c1"># The SHAP summary plot can be generated by calling:</span>
+<span class="n">xfp</span><span class="o">.</span><span class="n">generate_shap_summary_plot</span><span class="p">()</span>
+
+<span class="c1"># The report can be generated for any desired bits:</span>
+<span class="n">xfp</span><span class="o">.</span><span class="n">generate_bit_analysis_report</span><span class="p">([</span><span class="mi">807</span><span class="p">,</span> <span class="mi">3839</span><span class="p">,</span> <span class="mi">2698</span><span class="p">,</span> <span class="mi">3291</span><span class="p">,</span> <span class="mi">2855</span><span class="p">,</span> <span class="mi">800</span><span class="p">],</span> <span class="n">report_title</span> <span class="o">=</span> <span class="s2">&quot;X-FP SHAP TreeExplainer Report: hERG Test Set&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="xgboost-feature-importance">
+<h3>XGBoost Feature Importance<a class="headerlink" href="#xgboost-feature-importance" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import X-FP for XGBoost in-built feature importance methods</span>
+<span class="kn">from</span> <span class="nn">xfp.xfp_xgb</span> <span class="kn">import</span> <span class="n">XGBFP</span>
+
+<span class="c1"># Read the FP2 XGBoost classification model</span>
+<span class="n">model_fp2</span> <span class="o">=</span> <span class="n">XGBClassifier</span><span class="p">()</span>
+<span class="n">fp2_model_path</span> <span class="o">=</span> <span class="s2">&quot;example_data/herg_model-xgb.json&quot;</span>
+
+<span class="n">model_fp2</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="n">fp2_model_path</span><span class="p">)</span>
+
+<span class="c1"># Make a X-FP XGBoost feature importance object</span>
+<span class="n">xfp</span> <span class="o">=</span> <span class="n">XGBFP</span><span class="p">(</span><span class="n">model_fp2</span><span class="p">)</span>
+
+<span class="c1"># Load the data (here, the test set - in case you want to visualize the important bits and the chemical substructures they encode in the test set)</span>
+<span class="n">df_test</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;example_data/df_test_herg.tsv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="c1"># Generate the fingerprints of the radius and number of bits on which the model was trained</span>
+<span class="n">xfp</span><span class="o">.</span><span class="n">fetch_fp_from_df</span><span class="p">(</span><span class="n">df_test</span><span class="p">,</span> <span class="n">smiles_col</span> <span class="o">=</span> <span class="s2">&quot;Smiles&quot;</span><span class="p">,</span> <span class="n">n_bits</span><span class="o">=</span> <span class="mi">4096</span><span class="p">,</span> <span class="n">use_chirality</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># The dataframe (now with extra columns for the RDKit molecule object and the Morgan fingerprints) can be checked by calling:</span>
+<span class="n">xfp</span><span class="o">.</span><span class="n">input_df</span>
+
+<span class="c1"># This dataframe is a normal Pandas dataframe and can be used as such</span>
+<span class="n">xfp</span><span class="o">.</span><span class="n">input_df</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+<span class="n">xfp</span><span class="o">.</span><span class="n">input_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+
+<span class="c1"># Generate the fragments. This is usually the time-consuming step, and can depend on the size of the dataset and parallelization.</span>
+<span class="n">xfp</span><span class="o">.</span><span class="n">generate_frags</span><span class="p">(</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># To visualize the number of substructures encoded per bit across the dataset, a box plot can be generated:</span>
+<span class="n">xfp</span><span class="o">.</span><span class="n">make_substruct_per_bit_plot</span><span class="p">()</span>
+
+<span class="c1"># The feature importance should be generated first. Any of the in-built feature importance methods can be used.</span>
+<span class="n">xfp</span><span class="o">.</span><span class="n">make_feature_importance_df</span><span class="p">(</span><span class="n">importance_type</span> <span class="o">=</span> <span class="s2">&quot;gain&quot;</span><span class="p">)</span>
+
+<span class="c1"># The feature importance plot can be generated by calling:</span>
+<span class="n">xfp</span><span class="o">.</span><span class="n">generate_feature_importance_plot</span><span class="p">()</span>
+
+<span class="c1"># The report can be generated for any desired bits:</span>
+<span class="n">xfp</span><span class="o">.</span><span class="n">generate_bit_analysis_report</span><span class="p">([</span><span class="mi">807</span><span class="p">,</span> <span class="mi">3839</span><span class="p">,</span> <span class="mi">2698</span><span class="p">,</span> <span class="mi">3291</span><span class="p">,</span> <span class="mi">2855</span><span class="p">,</span> <span class="mi">800</span><span class="p">],</span> <span class="n">report_title</span> <span class="o">=</span> <span class="s2">&quot;X-FP XGB FI Report: hERG Test Set&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="output">
+<h2>Output<a class="headerlink" href="#output" title="Link to this heading">¶</a></h2>
+<p>Here is a page from a report that was generated by X-FP for the hERG test set.</p>
+<p><img alt="report sample" src="https://github.com/czodrowskilab/x-fp/blob/main/src/xfp/resources/X-FP_ReportSample.png" /></p>
+</section>
+<section id="how-to-contribute">
+<h2>How to contribute?<a class="headerlink" href="#how-to-contribute" title="Link to this heading">¶</a></h2>
+<p>If you’re interested in contributing, please see our <a class="reference external" href="https://github.com/czodrowskilab/x-fp/blob/main/CONTRIBUTING.md">contribution guidelines</a>.</p>
+</section>
+<section id="cite-us">
+<h2>Cite us<a class="headerlink" href="#cite-us" title="Link to this heading">¶</a></h2>
+<p>Reference for citation will be added soon.</p>
+</section>
+<section id="authors">
+<h2>Authors<a class="headerlink" href="#authors" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Marcel Baltruschat (<a class="reference external" href="https://github.com/mrcblt">GitHub</a>)</p></li>
+<li><p>Aishvarya Tandon (<a class="reference external" href="https://github.com/aish-tan">GitHub</a>)</p></li>
+</ul>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading">¶</a></h2>
+<p>The list of contributors can be found <a class="reference external" href="https://github.com/czodrowskilab/x-fp/blob/main/CONTRIBUTORS.md">here</a>.</p>
+</section>
+<section id="license">
+<h2>License<a class="headerlink" href="#license" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/czodrowskilab/x-fp/blob/main/LICENSE">MIT License</a></p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/X-FP_logo.png" alt="Logo"/>
+            </a></p>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">X-FP - eXplainable FingerPrints</a><ul>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#installation">Installation</a><ul>
+<li><a class="reference internal" href="#using-mamba">Using Mamba</a></li>
+<li><a class="reference internal" href="#using-only-pip">Using only Pip</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage">Usage</a><ul>
+<li><a class="reference internal" href="#test-data-and-model">Test Data and Model</a></li>
+<li><a class="reference internal" href="#shap-treeexplainer">SHAP TreeExplainer</a></li>
+<li><a class="reference internal" href="#xgboost-feature-importance">XGBoost Feature Importance</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#output">Output</a></li>
+<li><a class="reference internal" href="#how-to-contribute">How to contribute?</a></li>
+<li><a class="reference internal" href="#cite-us">Cite us</a></li>
+<li><a class="reference internal" href="#authors">Authors</a></li>
+<li><a class="reference internal" href="#contributors">Contributors</a></li>
+<li><a class="reference internal" href="#license">License</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="index.html"
+                          title="previous chapter">Welcome to X-FP’s documentation!</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="xfp.html"
+                          title="next chapter">xfp package API</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/readme_link.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="xfp.html" title="xfp package API"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to X-FP’s documentation!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">X-FP 1.1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">X-FP - eXplainable FingerPrints</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2022-2023, Marcel Baltruschat and Aishvarya Tandon.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>
