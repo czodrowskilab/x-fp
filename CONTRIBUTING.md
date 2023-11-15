@@ -1,7 +1,7 @@
 # Contributing to X-FP
 
 ## Introduction
-Thanks for your interest in contributing to X-FP! We welcome contributions from everyone. Please read this document before you start contributing.
+Thanks for your interest in contributing to X-FP! Please read this document before you start contributing.
 
 
 ## What can I contribute?
@@ -48,7 +48,7 @@ X-FP uses [Sphinx](https://www.sphinx-doc.org/en/master/) for documentation. The
 Think the code can be improved? Please open a pull request on GitHub. We welcome contributions to improve the code quality.
 
 ### Test improvements
-X-FP uses [pytest](https://docs.pytest.org/en) for testing. The tests are located in the `tests` folder. So far, we only test the core functionality of X-FP (`core_xfp.py`). We welcome contributions to expand the test coverage.
+X-FP uses [pytest](https://docs.pytest.org/en) for testing. The tests are located in the `tests` folder. So far, we only test the core functionality of X-FP (esp. `core_xfp.py`). We welcome contributions to expand the test coverage.
 
 ### Examples
 Have a cool example of how you used X-FP and would like to share it with the community? Please do so!
