@@ -132,7 +132,7 @@ class FingerprintManager:
         n_bits: int = 2048,
         use_features: bool = False,
         use_chirality: bool = False,
-        mol_col: bool = None,
+        mol_col: str = None,
         canonicalize: bool = True,
     ) -> None:
         """
