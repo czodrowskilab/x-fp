@@ -45,9 +45,9 @@ environment which is not recommended.
 
 X-FP is fairly straight-forward to use. 
 
-### Test Data and Model
-hERG bioactivity data was accessed from CHEMBL 27. A [XGBoost binary classification model](https://github.com/czodrowskilab/x-fp/blob/main/test_data/herg_model-xgb.json) was trained on 6078 compounds. 
-[Test data](https://github.com/czodrowskilab/x-fp/blob/main/test_data/df_test_herg.tsv) comprising of 1216 compounds is included.
+### Example Data and Model
+hERG bioactivity data was accessed from CHEMBL 27. An [XGBoost binary classification model](https://github.com/czodrowskilab/x-fp/blob/main/example_data/herg_model-xgb.json) was trained on 6078 compounds. 
+An [example data](https://github.com/czodrowskilab/x-fp/blob/main/example_data/df_test_herg.tsv) comprising of 1216 compounds is included.
 
 Note that you should install `xgboost` to run the examples below. 
 
